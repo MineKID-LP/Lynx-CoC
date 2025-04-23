@@ -1,4 +1,4 @@
-package de.stylabs.tokenizer;
+package de.stylabs.lynx.tokenizer;
 
 import java.util.Arrays;
 import java.util.List;

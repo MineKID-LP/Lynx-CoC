@@ -1,4 +1,4 @@
-package de.stylabs.errors;
+package de.stylabs.lynx.errors;
 
 public class UnexpectedEOF extends RuntimeException {
     public UnexpectedEOF() {

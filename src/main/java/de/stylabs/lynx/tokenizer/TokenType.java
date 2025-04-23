@@ -1,4 +1,4 @@
-package de.stylabs.tokenizer;
+package de.stylabs.lynx.tokenizer;
 
 public enum TokenType {
     STRING_LITERAL(""),

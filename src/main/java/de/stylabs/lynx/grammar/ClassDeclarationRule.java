@@ -1,9 +1,9 @@
-package de.stylabs.grammar;
+package de.stylabs.lynx.grammar;
 
-import de.stylabs.parser.AST;
-import de.stylabs.parser.ASTType;
-import de.stylabs.tokenizer.Token;
-import de.stylabs.tokenizer.TokenType;
+import de.stylabs.lynx.parser.AST;
+import de.stylabs.lynx.parser.ASTType;
+import de.stylabs.lynx.tokenizer.Token;
+import de.stylabs.lynx.tokenizer.TokenType;
 
 import java.util.List;
 

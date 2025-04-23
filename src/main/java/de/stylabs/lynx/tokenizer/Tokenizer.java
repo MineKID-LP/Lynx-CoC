@@ -1,7 +1,7 @@
-package de.stylabs.tokenizer;
+package de.stylabs.lynx.tokenizer;
 
-import de.stylabs.errors.UnexpectedEOF;
-import de.stylabs.util.Character;
+import de.stylabs.lynx.errors.UnexpectedEOF;
+import de.stylabs.lynx.util.Character;
 
 import java.io.File;
 import java.io.IOException;

@@ -1,4 +1,4 @@
-package de.stylabs.util;
+package de.stylabs.lynx.util;
 
 public class Character {
     public static boolean isWhitespace(char c) {

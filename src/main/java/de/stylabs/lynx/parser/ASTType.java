@@ -1,4 +1,4 @@
-package de.stylabs.parser;
+package de.stylabs.lynx.parser;
 
 public enum ASTType {
     PROGRAM,

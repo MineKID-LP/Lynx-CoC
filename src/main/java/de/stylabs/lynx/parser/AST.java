@@ -1,6 +1,6 @@
-package de.stylabs.parser;
+package de.stylabs.lynx.parser;
 
-import de.stylabs.tokenizer.TokenType;
+import de.stylabs.lynx.tokenizer.TokenType;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,6 +1,6 @@
-package de.stylabs.errors;
+package de.stylabs.lynx.errors;
 
-import de.stylabs.tokenizer.Token;
+import de.stylabs.lynx.tokenizer.Token;
 
 public class UnexpectedToken extends RuntimeException{
     private final Token token;

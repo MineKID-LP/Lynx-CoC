@@ -1,14 +1,14 @@
-package de.stylabs.grammar;
+package de.stylabs.lynx.grammar;
 
-import de.stylabs.parser.AST;
-import de.stylabs.parser.ASTType;
-import de.stylabs.tokenizer.Token;
-import de.stylabs.tokenizer.TokenAcceptor;
-import de.stylabs.tokenizer.TokenType;
+import de.stylabs.lynx.parser.AST;
+import de.stylabs.lynx.parser.ASTType;
+import de.stylabs.lynx.tokenizer.Token;
+import de.stylabs.lynx.tokenizer.TokenAcceptor;
+import de.stylabs.lynx.tokenizer.TokenType;
 
 import java.util.List;
 
-public class VoidFunctionDeclarationRule implements GrammarRule{
+public class FunctionDeclarationRule implements GrammarRule{
     @Override
     public List<Object> getTokenSequence() {
         return List.of(
@@ -16,7 +16,8 @@ public class VoidFunctionDeclarationRule implements GrammarRule{
                 TokenType.IDENTIFIER,
                 TokenType.LEFT_PARENTHESIS,
                 TokenAcceptor.of(TokenType.IDENTIFIER, TokenType.COMMA).until(TokenType.RIGHT_PARENTHESIS), // Accepts all identifiers and commas until we get a closing parenthesis
-                TokenType.LEFT_CURLY_BRACKET
+                TokenType.ARROW,
+                TokenType.IDENTIFIER
         );
     }
 
@@ -40,7 +41,10 @@ public class VoidFunctionDeclarationRule implements GrammarRule{
             tokens.remove(4);
         }
 
-        ast.addChild(new AST(ASTType.FUNCTION_RETURN_TYPE, TokenType.IDENTIFIER, "void"));
+        //Add return type
+        if (tokens.get(5).type() == TokenType.IDENTIFIER) {
+            ast.addChild(new AST(ASTType.FUNCTION_RETURN_TYPE, tokens.get(5).type(), tokens.get(5).value()));
+        }
 
         return ast;
     }

@@ -1,8 +1,8 @@
-package de.stylabs;
+package de.stylabs.lynx;
 
-import de.stylabs.parser.AST;
-import de.stylabs.parser.Parser;
-import de.stylabs.tokenizer.Tokenizer;
+import de.stylabs.lynx.parser.AST;
+import de.stylabs.lynx.parser.Parser;
+import de.stylabs.lynx.tokenizer.Tokenizer;
 
 import java.io.File;
 import java.io.FileOutputStream;

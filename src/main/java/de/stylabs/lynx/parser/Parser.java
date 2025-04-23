@@ -1,20 +1,16 @@
-package de.stylabs.parser;
+package de.stylabs.lynx.parser;
 
-import de.stylabs.errors.UnexpectedEOF;
-import de.stylabs.errors.UnexpectedToken;
-import de.stylabs.grammar.*;
-import de.stylabs.tokenizer.Token;
-import de.stylabs.tokenizer.TokenAcceptor;
-import de.stylabs.tokenizer.TokenType;
+import de.stylabs.lynx.errors.UnexpectedEOF;
+import de.stylabs.lynx.errors.UnexpectedToken;
+import de.stylabs.lynx.grammar.*;
+import de.stylabs.lynx.tokenizer.Token;
+import de.stylabs.lynx.tokenizer.TokenAcceptor;
+import de.stylabs.lynx.tokenizer.TokenType;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static de.stylabs.LynxCompiler.print;
+import static de.stylabs.lynx.LynxCompiler.print;
 
 public class Parser {
     private static final List<GrammarRule> grammarRules = List.of(
