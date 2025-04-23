@@ -2,6 +2,7 @@ package de.stylabs.grammar;
 
 import de.stylabs.parser.AST;
 import de.stylabs.parser.ASTType;
+import de.stylabs.parser.Parser;
 import de.stylabs.tokenizer.Token;
 import de.stylabs.tokenizer.TokenAcceptor;
 import de.stylabs.tokenizer.TokenType;
@@ -24,7 +25,8 @@ public class VariableAssignmentRule implements GrammarRule{
     public AST createNode(List<Token> tokens) {
         AST ast = new AST(ASTType.VARIABLE_ASSIGNMENT);
         ast.addChild(new AST(ASTType.IDENTIFIER, tokens.get(0).type(), tokens.get(0).value()));
-        ast.addChild(new AST(ASTType.VARIABLE_VALUE, tokens.get(2).type(), tokens.get(2).value()));
+        List<Token> subList = tokens.subList(2, tokens.size()); //cut out identifier and assign
+        ast.addChild(Parser.generateAST(subList, ast));
         return ast;
     }
 }

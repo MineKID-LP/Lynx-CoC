@@ -7,11 +7,14 @@ import de.stylabs.tokenizer.Token;
 import de.stylabs.tokenizer.TokenAcceptor;
 import de.stylabs.tokenizer.TokenType;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import static de.stylabs.LynxCompiler.print;
-
 
 public class Parser {
     private static final List<GrammarRule> grammarRules = List.of(
@@ -19,52 +22,46 @@ public class Parser {
             new FunctionDeclarationRule(),
             new VariableDeclarationRule(),
             new VariableAssignmentRule(),
-            new VoidFunctionDeclarationRule()
-    );
+            new VoidFunctionDeclarationRule());
 
-    public static AST generateAST(List<Token> tokens) {
-        AST root = new AST(ASTType.PROGRAM);
+    public static AST generateAST(List<Token> tokens, AST parent) {
+        AST root = (parent == null) ? new AST(ASTType.PROGRAM) : parent;
 
         int index = 0;
         while (index < tokens.size()) {
             boolean matched = false;
-
             for (GrammarRule rule : grammarRules) {
                 List<Token> subList = tokens.subList(index, tokens.size());
-                if (matchesInitialSequence(rule, subList)) {
+                SequenceMatch match = matchesInitialSequence(rule, subList);
+                if (match.success()) {
+                    matched = true;
                     AST node = rule.createNode(subList);
-                    index += rule.getTokenSequence().size();
-
-                    // Make sure to not skip the left curly bracket in order to not fk up extractBlockTokens
-                    if(rule.getTokenSequence().getLast().equals(TokenType.LEFT_CURLY_BRACKET)) {
-                        index--;
-                    } else if (rule.getTokenSequence().getLast() instanceof TokenAcceptor acceptor) {
-                        if (acceptor.getAcceptedTypes().contains(TokenType.LEFT_CURLY_BRACKET)) {
-                            index--;
-                        }
-                    }
+                    index += match.matchedAmount();
 
                     // If the rule allows children, process the block
                     if (rule.canHaveChildren()) {
-                        BlockResult blockResult = extractBlockTokens(tokens, index);
-                        AST childAST = generateAST(blockResult.tokens());
-                        node.addChild(childAST);
-                        index = blockResult.endIndex();
+                        BlockResult blockResult = extractBlockTokens(subList, index);
+                        List<Token> subTokens = blockResult.tokens();
+                        subTokens = subTokens.subList(1, subTokens.size() - 1); // Remove surrounding braces
+                        generateAST(subTokens, node); // Pass the current node as parent
+                        index = blockResult.endIndex() + 1; // Move index past the block
                     }
 
                     root.addChild(node);
-                    matched = true;
                     break;
                 }
             }
 
             if (!matched) {
-                index++;
-                //throw new UnexpectedToken(tokens.get(index));
+                throw new UnexpectedToken(tokens.get(index + 1));
             }
         }
 
         return root;
+    }
+
+    public static AST generateAST(List<Token> tokens) {
+        return generateAST(tokens, null);
     }
 
     private static BlockResult extractBlockTokens(List<Token> tokens, int startIndex) {
@@ -81,7 +78,7 @@ public class Parser {
             } else if (token.type().equals(TokenType.RIGHT_CURLY_BRACKET)) {
                 openBraces--;
                 if (openBraces == 0) {
-                    endIndex = i + 1; // Update endIndex to the position after the closing brace
+                    endIndex = i; // Update endIndex to the position after the closing brace
                     break;
                 }
             }
@@ -94,22 +91,26 @@ public class Parser {
         return new BlockResult(blockTokens, endIndex);
     }
 
-    private static boolean matchesInitialSequence(GrammarRule rule, List<Token> tokens) {
+    private static SequenceMatch matchesInitialSequence(GrammarRule rule, List<Token> tokens) {
         List<Object> sequence = rule.getTokenSequence();
         if (tokens.size() < sequence.size()) {
-            return false;
+            print("Too few tokens");
+            return new SequenceMatch(false, 0);
         }
 
         int matchedCount = 0;
 
         for (int i = 0; i < sequence.size(); i++) {
+            if (matchedCount >= tokens.size()) {
+                break;
+            }
             Object expected = sequence.get(i);
             Token actual = tokens.get(matchedCount);
 
             if (expected instanceof TokenType) {
                 if (!actual.type().equals(expected)) {
                     reportMismatch(rule, tokens, i, matchedCount, "TYPE");
-                    return false;
+                    return new SequenceMatch(false, 0);
                 }
             } else if (expected instanceof TokenAcceptor acceptor) {
                 if (acceptor.accepts(actual)) {
@@ -123,37 +124,35 @@ public class Parser {
 
             matchedCount++;
         }
-
-        return true;
+        return new SequenceMatch(true, matchedCount);
     }
 
-    private static void reportMismatch(GrammarRule rule, List<Token> tokens, int failedIndex, int matchedCount, String cause) {
-        if (matchedCount > 0) {
-            List<String> expectedTypes = new ArrayList<>();
-            for (int i = 0; i < rule.getTokenSequence().size(); i++) {
-                if(rule.getTokenSequence().get(i) instanceof TokenType expectedType) {
-                    expectedTypes.add(expectedType.toString());
-                } else if (rule.getTokenSequence().get(i) instanceof TokenAcceptor acceptor) {
-                    acceptor.getAcceptedTypes().forEach(type -> expectedTypes.add(type.toString()));
-                }
+    private static void reportMismatch(GrammarRule rule, List<Token> tokens, int failedIndex, int matchedCount,
+            String cause) {
+        List<String> expectedTypes = new ArrayList<>();
+        for (int i = 0; i < rule.getTokenSequence().size(); i++) {
+            if (rule.getTokenSequence().get(i) instanceof TokenType expectedType) {
+                expectedTypes.add(expectedType.toString());
+            } else if (rule.getTokenSequence().get(i) instanceof TokenAcceptor acceptor) {
+                acceptor.getAcceptedTypes().forEach(type -> expectedTypes.add(type.toString()));
             }
-
-            List<String> actualTypes = new ArrayList<>();
-            for (int i = 0; i < rule.getTokenSequence().size(); i++) {
-                actualTypes.add(tokens.get(i).type().toString());
-            }
-
-            StringBuilder error = new StringBuilder();
-            error.append("Token sequence mismatch in rule: ").append(rule.getClass().getSimpleName()).append("\n");
-            error.append("Expected sequence: ").append(expectedTypes).append("\n");
-            error.append("Actual tokens: ").append(actualTypes).append("\n");
-            error.append("Failed at index ").append(failedIndex).append(": ");
-            error.append("Expected ").append(rule.getTokenSequence().get(failedIndex)).append(", ");
-            error.append("but got ").append(tokens.get(matchedCount).type()).append("\n");
-            error.append("Matched ").append(matchedCount).append(" token(s) before failing.")
-            .append("\nCause: ").append(cause).append("\n");
-
-            print(error.toString());
         }
+
+        List<String> actualTypes = new ArrayList<>();
+        for (int i = 0; i < rule.getTokenSequence().size(); i++) {
+            actualTypes.add(tokens.get(i).type().toString() + "(" + tokens.get(i).value().toString() + ")");
+        }
+
+        StringBuilder error = new StringBuilder();
+        error.append("Token sequence mismatch in rule: ").append(rule.getClass().getSimpleName()).append("\n");
+        error.append("Expected sequence: ").append(expectedTypes).append("\n");
+        error.append("Actual tokens: ").append(actualTypes).append("\n");
+        error.append("Failed at index ").append(failedIndex).append(": ");
+        error.append("Expected ").append(rule.getTokenSequence().get(failedIndex)).append(", ");
+        error.append("but got ").append(tokens.get(matchedCount).type()).append("\n");
+        error.append("Matched ").append(matchedCount).append(" token(s) before failing.\n");
+        error.append("Cause: ").append(cause).append("\n");
+
+        print(error.toString());
     }
 }

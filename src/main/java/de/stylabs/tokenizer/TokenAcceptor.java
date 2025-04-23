@@ -69,7 +69,8 @@ public class TokenAcceptor {
                 TokenType.TRUE,
                 TokenType.FALSE,
 
-                TokenType.NULL
+                TokenType.NULL,
+                TokenType.NEW
         ).until(TokenType.SEMICOLON);
     }
 
