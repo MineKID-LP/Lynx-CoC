@@ -9,8 +9,8 @@ public enum TokenType {
 
     TYPE(""),
 
-    LEFT_BRACKET("("),
-    RIGHT_BRACKET(")"),
+    LEFT_PARENTHESIS("("),
+    RIGHT_PARENTHESIS(")"),
     LEFT_SQUARE_BRACKET("["),
     RIGHT_SQUARE_BRACKET("]"),
     LEFT_CURLY_BRACKET("{"),
@@ -32,6 +32,7 @@ public enum TokenType {
     RETURN("return"),
 
     FUNCTION("function"),
+    ARROW("->"),
     CLASS("class"),
 
     THIS("this"),
@@ -88,7 +89,7 @@ public enum TokenType {
 
     public static TokenType matchBracket(char c) {
         return switch(c) {
-            case '(', ')' -> LEFT_BRACKET;
+            case '(', ')' -> LEFT_PARENTHESIS;
             case '[', ']' -> LEFT_SQUARE_BRACKET;
             case '{', '}' -> LEFT_CURLY_BRACKET;
             default -> IDENTIFIER;

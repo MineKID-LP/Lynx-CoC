@@ -15,7 +15,7 @@ public class ClassDeclarationRule implements GrammarRule {
 
     @Override
     public AST createNode(List<Token> tokens) {
-        return new AST(ASTType.CLASS_DECLARATION, tokens.get(1).value());
+        return new AST(ASTType.CLASS_DECLARATION, tokens.get(1).type(), tokens.get(1).value());
     }
 
     @Override

@@ -17,8 +17,8 @@ public class VariableDeclarationRule implements GrammarRule{
     @Override
     public AST createNode(List<Token> tokens) {
         AST ast = new AST(ASTType.VARIABLE_DECLARATION);
-        ast.addChild(new AST(ASTType.IDENTIFIER, tokens.get(1).value()));
-        ast.addChild(new AST(ASTType.VARIABLE_VALUE, tokens.get(3).value()));
+        ast.addChild(new AST(ASTType.IDENTIFIER, tokens.get(1).type(), tokens.get(1).value()));
+        ast.addChild(new AST(ASTType.VARIABLE_VALUE, tokens.get(3).type(), tokens.get(3).value()));
         return ast;
     }
 }

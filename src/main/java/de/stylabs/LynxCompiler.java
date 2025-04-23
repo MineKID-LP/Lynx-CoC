@@ -25,6 +25,9 @@ public class LynxCompiler {
         }
         try {
             AST ast = Parser.generateAST(tokenizer.getTokens());
+
+            FileOutputStream astOut = new FileOutputStream(new File("./outline.ast"));
+            astOut.write(ast.toJSON().getBytes());
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
