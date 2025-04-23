@@ -33,4 +33,10 @@ public class LynxCompiler {
         }
 
     }
+
+    public static void print(String ...messages) {
+        for (String message : messages) {
+            System.out.println(message);
+        }
+    }
 }

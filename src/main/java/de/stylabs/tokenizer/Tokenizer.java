@@ -24,6 +24,7 @@ public class Tokenizer {
         this.tokens = new ArrayList<>();
         try {
             this.content = Files.readString(file.toPath());
+            this.content = content.replaceAll("(?<!\"[^\"]*)//.*", "");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -44,7 +45,7 @@ public class Tokenizer {
             if (Character.isDigit(c)) {
                 StringBuilder number = new StringBuilder();
                 int startLine = currentLineNumber;
-                int startColumn = currentColumn;
+                int startColumn = currentColumn + 1;
                 while (hasNext() && Character.isDigit(peek())) {
                     number.append(next());
                 }
@@ -55,7 +56,7 @@ public class Tokenizer {
             if (Character.isLetter(c)) {
                 StringBuilder identifier = new StringBuilder();
                 int startLine = currentLineNumber;
-                int startColumn = currentColumn;
+                int startColumn = currentColumn + 1;
                 while (hasNext() && (Character.isLetterOrDigit(peek()) || peek() == '_')) {
                     identifier.append(next());
                 }
@@ -64,7 +65,7 @@ public class Tokenizer {
             }
 
             if(Character.isBracket(c)) {
-                tokens.add(new Token(TokenType.matchBracket(c), String.valueOf(c), currentLineNumber, currentColumn));
+                tokens.add(new Token(TokenType.matchBracket(c), String.valueOf(c), currentLineNumber, currentColumn + 1));
                 advance();
                 continue;
             }
@@ -72,7 +73,7 @@ public class Tokenizer {
             if (Character.isOperator(c)) {
                 StringBuilder operator = new StringBuilder();
                 int startLine = currentLineNumber;
-                int startColumn = currentColumn;
+                int startColumn = currentColumn + 1;
                 while (hasNext() && Character.isOperator(peek())) {
                     operator.append(next());
                 }
@@ -81,7 +82,7 @@ public class Tokenizer {
             }
 
             if (Character.isPunctuation(c)) {
-                tokens.add(new Token(TokenType.matchPunctuation(c), String.valueOf(c), currentLineNumber, currentColumn));
+                tokens.add(new Token(TokenType.matchPunctuation(c), String.valueOf(c), currentLineNumber, currentColumn + 1));
                 advance();
                 continue;
             }
@@ -89,7 +90,7 @@ public class Tokenizer {
             if (Character.isStringDelimiter(c)) {
                 StringBuilder stringLiteral = new StringBuilder();
                 int startLine = currentLineNumber;
-                int startColumn = currentColumn;
+                int startColumn = currentColumn + 1;
                 char delimiter = next();
                 while (hasNext() && peek() != delimiter) {
                     stringLiteral.append(next());

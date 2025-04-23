@@ -11,7 +11,13 @@ import java.util.List;
 public class VariableAssignmentRule implements GrammarRule{
     @Override
     public List<Object> getTokenSequence() {
-        return List.of(TokenType.IDENTIFIER, TokenType.ASSIGN, TokenAcceptor.of(TokenType.NUMBER_LITERAL, TokenType.STRING_LITERAL), TokenType.SEMICOLON);
+        return List.of(
+                TokenType.IDENTIFIER,
+                TokenType.ASSIGN,
+                //Trust me you do not want to know what this is
+                //⋆｡°✩ Keep it magical ⋆｡°✩
+                TokenAcceptor.ofVariableAssignment()
+        );
     }
 
     @Override

@@ -8,7 +8,7 @@ import de.stylabs.tokenizer.TokenType;
 
 import java.util.List;
 
-public class FunctionDeclarationRule implements GrammarRule{
+public class VoidFunctionDeclarationRule implements GrammarRule{
     @Override
     public List<Object> getTokenSequence() {
         return List.of(
@@ -16,8 +16,7 @@ public class FunctionDeclarationRule implements GrammarRule{
                 TokenType.IDENTIFIER,
                 TokenType.LEFT_PARENTHESIS,
                 TokenAcceptor.of(TokenType.IDENTIFIER, TokenType.COMMA).until(TokenType.RIGHT_PARENTHESIS), // Accepts all identifiers and commas until we get a closing parenthesis
-                TokenType.ARROW,
-                TokenType.IDENTIFIER
+                TokenType.LEFT_CURLY_BRACKET
         );
     }
 
@@ -41,10 +40,7 @@ public class FunctionDeclarationRule implements GrammarRule{
             tokens.remove(4);
         }
 
-        //Add return type
-        if (tokens.get(5).type() == TokenType.IDENTIFIER) {
-            ast.addChild(new AST(ASTType.FUNCTION_RETURN_TYPE, tokens.get(5).type(), tokens.get(5).value()));
-        }
+        ast.addChild(new AST(ASTType.FUNCTION_RETURN_TYPE, TokenType.IDENTIFIER, "void"));
 
         return ast;
     }

@@ -66,11 +66,15 @@ public enum TokenType {
     BITWISE_OR("|"),
     BITWISE_XOR("^"),
     BITWISE_NOT("~"),
+    BITWISE_SHIFT_LEFT("<<"),
+    BITWISE_SHIFT_RIGHT(">>"),
+    BITWISE_SHIFT_RIGHT_UNSIGNED(">>>"),
+    BITWISE_SHIFT_LEFT_UNSIGNED("<<<"),
 
     LOGICAL_AND("&&"),
     LOGICAL_OR("||"),
 
-    ;
+    NULL("null");
 
     private final String matchingString;
 
