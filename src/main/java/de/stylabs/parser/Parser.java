@@ -17,7 +17,7 @@ public class Parser {
             new VariableAssignmentRule()
     );
 
-    public static AST generateAST(List<Token> tokens) throws Throwable {
+    public static AST generateAST(List<Token> tokens) {
         AST root = new AST(ASTType.PROGRAM);
 
         int index = 0;
