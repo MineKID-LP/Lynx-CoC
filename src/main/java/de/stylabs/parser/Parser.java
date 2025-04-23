@@ -10,7 +10,7 @@ import java.util.List;
 
 
 public class Parser {
-    private static List<GrammarRule> grammarRules = List.of(
+    private static final List<GrammarRule> grammarRules = List.of(
             new ClassDeclarationRule(),
             new FunctionDeclarationRule(),
             new VariableDeclarationRule(),
