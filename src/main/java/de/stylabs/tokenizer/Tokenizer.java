@@ -76,7 +76,7 @@ public class Tokenizer {
                 while (hasNext() && Character.isOperator(peek())) {
                     operator.append(next());
                 }
-                tokens.add(new Token(TokenType.matchOperator(operator.toString()), operator.toString(), startLine, startColumn));
+                tokens.add(new Token(TokenType.match(operator.toString()), operator.toString(), startLine, startColumn));
                 continue;
             }
 

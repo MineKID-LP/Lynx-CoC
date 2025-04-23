@@ -1,8 +1,8 @@
 package de.stylabs.parser;
 
-public enum ASTTypes {
+public enum ASTType {
     PROGRAM,
-    FUNCTION,
+    FUNCTION_DECLARATION,
     FUNCTION_CALL,
     VARIABLE_DECLARATION,
     VARIABLE_ASSIGNMENT,
@@ -15,5 +15,7 @@ public enum ASTTypes {
     LITERAL,
     IDENTIFIER,
     BLOCK_STATEMENT,
-    EXPRESSION_STATEMENT
+    EXPRESSION_STATEMENT,
+    CLASS_DECLARATION,
+    VARIABLE_VALUE
 }

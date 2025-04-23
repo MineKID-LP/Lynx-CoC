@@ -34,13 +34,6 @@ public enum TokenType {
     FUNCTION("function"),
     CLASS("class"),
 
-    INT("int"),
-    FLOAT("float"),
-    STRING("string"),
-    BOOL("bool"),
-    VOID("void"),
-    CHAR("char"),
-
     THIS("this"),
     NEW("new"),
     PUBLIC("public"),
@@ -51,6 +44,31 @@ public enum TokenType {
 
     THROW("throw"),
 
+    PLUS("+"),
+    MINUS("-"),
+    MULTIPLY("*"),
+    DIVIDE("/"),
+    MODULO("%"),
+    EQUALS("=="),
+    NOT_EQUALS("!="),
+    LESS_THAN("<"),
+    GREATER_THAN(">"),
+    LESS_THAN_EQUALS("<="),
+    GREATER_THAN_EQUALS(">="),
+
+    ASSIGN("="),
+
+    INCREMENT("++"),
+    DECREMENT("--"),
+
+    BITWISE_AND("&"),
+    BITWISE_OR("|"),
+    BITWISE_XOR("^"),
+    BITWISE_NOT("~"),
+
+    LOGICAL_AND("&&"),
+    LOGICAL_OR("||"),
+
     ;
 
     private final String matchingString;
@@ -59,20 +77,13 @@ public enum TokenType {
         this.matchingString = s;
     }
 
-    public static TokenType matchOperator(String string) {
-        return switch(string) {
-            case "+", "-", "*", "/", "%", "==", "!=", "<", ">", "<=", ">=" -> OPERATOR;
-            default -> IDENTIFIER;
-        };
-    }
-
     public static TokenType match(String string) {
         for (TokenType type : TokenType.values()) {
             if (type.matchingString.equalsIgnoreCase(string)) {
                 return type;
             }
         }
-        return matchOperator(string);
+        return TokenType.IDENTIFIER;
     }
 
     public static TokenType matchBracket(char c) {
