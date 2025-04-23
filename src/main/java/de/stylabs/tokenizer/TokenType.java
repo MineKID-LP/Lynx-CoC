@@ -89,9 +89,12 @@ public enum TokenType {
 
     public static TokenType matchBracket(char c) {
         return switch(c) {
-            case '(', ')' -> LEFT_PARENTHESIS;
-            case '[', ']' -> LEFT_SQUARE_BRACKET;
-            case '{', '}' -> LEFT_CURLY_BRACKET;
+            case '(' -> LEFT_PARENTHESIS;
+            case ')' -> RIGHT_PARENTHESIS;
+            case '[' -> LEFT_SQUARE_BRACKET;
+            case ']' -> RIGHT_SQUARE_BRACKET;
+            case '{' -> LEFT_CURLY_BRACKET;
+            case '}' -> RIGHT_CURLY_BRACKET;
             default -> IDENTIFIER;
         };
     }
