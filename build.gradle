@@ -1,0 +1,35 @@
+plugins {
+    id 'java'
+}
+
+group = 'de.stylabs'
+version = ''
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+//manifest
+jar {
+    manifest {
+        attributes(
+                'Main-Class': 'de.stylabs.LynxCompiler'
+        )
+    }
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
