@@ -42,4 +42,12 @@ public class Character {
                 c == '(' || c == ')' || c == '{' || c == '}' || c == '[' || c == ']' || c == ';' ||
                 c == '.' || c == ',' || c == ':' || c == '?';
     }
+
+    public static boolean isNewline(char c) {
+        return c == '\n' || c == '\r';
+    }
+
+    public static boolean isSlash(char c) {
+        return c == '/' || c == '\\';
+    }
 }

@@ -1,0 +1,41 @@
+package de.stylabs.lynx.grammar;
+
+import de.stylabs.lynx.parser.AST;
+import de.stylabs.lynx.parser.ASTType;
+import de.stylabs.lynx.parser.Parser;
+import de.stylabs.lynx.parser.TokenStream;
+import de.stylabs.lynx.tokenizer.TokenType;
+
+import java.util.List;
+
+public class FunctionCallRule {
+    public static AST createNode(TokenStream tokens) {
+        AST functionCall = new AST(ASTType.FUNCTION_CALL);
+
+        tokens.expect(TokenType.IDENTIFIER);
+        AST functionName = new AST(ASTType.FUNCTION_NAME, tokens.next().value());
+
+        while (tokens.get().type().equals(TokenType.DOT)) {
+            tokens.skip(); // Skip the dot
+            tokens.expect(TokenType.IDENTIFIER);
+            functionName.addChild(new AST(ASTType.FUNCTION_NAME, tokens.next().value()));
+        }
+
+        tokens.expect(TokenType.LEFT_PARENTHESIS);
+        tokens.skip(); // Skip the opening parenthesis
+        AST parameters = new AST(ASTType.PARAMETER_LIST);
+
+        TokenStream parameterListTokens = new TokenStream(tokens.until(TokenType.RIGHT_PARENTHESIS));
+
+        int parameterCount = 0;
+        while (parameterListTokens.hasNext()) {
+            TokenStream parameterTokens = new TokenStream(parameterListTokens.until(TokenType.COMMA));
+            AST parameter = new AST(ASTType.PARAMETER, String.valueOf(parameterCount));
+            parameter.addChild(Parser.generateExpression(parameterTokens));
+            parameters.addChild(parameter);
+            parameterCount++;
+        }
+
+        return functionCall;
+    }
+}

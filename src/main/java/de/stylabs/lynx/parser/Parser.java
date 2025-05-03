@@ -2,13 +2,17 @@ package de.stylabs.lynx.parser;
 
 import de.stylabs.lynx.errors.UnexpectedEOF;
 import de.stylabs.lynx.grammar.*;
+import de.stylabs.lynx.pattern.FunctionCallPattern;
 import de.stylabs.lynx.pattern.PatternMatch;
+import de.stylabs.lynx.pattern.VariableAssignmentPattern;
 import de.stylabs.lynx.pattern.VariableDeclarationPattern;
 import de.stylabs.lynx.tokenizer.Token;
 import de.stylabs.lynx.tokenizer.TokenType;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static java.util.Objects.isNull;
 
 
 public class Parser {
@@ -19,7 +23,7 @@ public class Parser {
         while(tokenStream.hasNext()) {
             Token token = tokenStream.next();
 
-            root.addChild(switch (token.type()) {
+            AST child = switch (token.type()) {
                 case CLASS -> ClassDeclarationRule.createNode(tokenStream);
                 case FUNCTION -> FunctionDeclarationRule.createNode(tokenStream);
                 case IDENTIFIER -> decideOnWhatTheFuckThisIs(tokenStream);
@@ -29,8 +33,11 @@ public class Parser {
                 case THROW -> ThrowRule.createNode(tokenStream);
                 case IF -> IfRule.createNode(tokenStream);
                 case LEFT_PARENTHESIS -> testTernary(tokenStream);
+                case COMMENT -> null;
                 default -> throw new RuntimeException(String.format("Unexpected %s at: %s:%s", token.type(), token.line(), token.column()));
-            });
+            };
+
+            if(!isNull(child)) root.addChild(child);
         }
 
         return root;
@@ -54,14 +61,8 @@ public class Parser {
     }
 
     private static AST decideOnWhatTheFuckThisIs(TokenStream tokenStream) {
-        // This is a bit complex...
-        // Examples:
-        //  string reversed = test.reverse(input);  New Assginment
-        //  reversed = "";                          Re-Assginment
-        //  print("Original: " + input);            FunctionCall
-        //  test.reverse(input);                    FunctionCall
-        //  array[1] = 5;                           Array Assignment
         tokenStream.back(); // We actually need this token, since we don't know what it is yet
+
         List<Token> tokens = tokenStream.until(TokenType.SEMICOLON);
         tokenStream.back();
         tokens.add(tokenStream.next());
@@ -70,6 +71,16 @@ public class Parser {
         PatternMatch match = VariableDeclarationPattern.get().match(statementStream);
         if(match.matched()) {
             return VariableDeclarationRule.createNode(new TokenStream(tokens));
+        }
+
+        match = VariableAssignmentPattern.get().match(statementStream);
+        if(match.matched()) {
+            return VariableAssignmentRule.createNode(new TokenStream(tokens));
+        }
+
+        match = FunctionCallPattern.get().match(statementStream);
+        if(match.matched()) {
+            return FunctionCallRule.createNode(new TokenStream(tokens));
         }
 
         throw new RuntimeException(String.format("Unexpected %s at: %s:%s", tokenStream.get().type(), tokenStream.get().line(), tokenStream.get().column()));

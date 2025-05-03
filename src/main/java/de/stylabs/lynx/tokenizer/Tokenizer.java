@@ -24,7 +24,6 @@ public class Tokenizer {
         this.tokens = new ArrayList<>();
         try {
             this.content = Files.readString(file.toPath());
-            this.content = content.replaceAll("(?<!\"[^\"]*)//.*", "");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -37,8 +36,21 @@ public class Tokenizer {
     public void tokenize() {
         while (hasNext()) {
             char c = peek();
+
             if (Character.isWhitespace(c)) {
                 advance();
+                continue;
+            }
+
+            if (Character.isSlash(c)) {
+                if (c != '/' || peek() != '/') return;
+                StringBuilder comment = new StringBuilder();
+                int startLine = currentLineNumber;
+                int startColumn = currentColumn + 1;
+                while (hasNext() && peek() != '\n') {
+                    comment.append(next());
+                }
+                tokens.add(new Token(TokenType.COMMENT, comment.toString(), startLine, startColumn));
                 continue;
             }
 

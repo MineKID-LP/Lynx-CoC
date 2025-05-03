@@ -43,27 +43,34 @@ public abstract class Pattern {
 
     public PatternMatch match(TokenStream tokens) {
         int maxTokens = tokens.size();
-        int peekCounter = 1;
+        int peekCounter = 0; // Start at 0 (not 1)
+        int patternCounter = 0; // Index for the pattern elements
         List<Token> matchedTokens = new ArrayList<>();
 
-        while (peekCounter < maxTokens) {
+        while (peekCounter < maxTokens && patternCounter < pattern.size()) {
             Token token = tokens.peek(peekCounter);
-            if (peekCounter >= pattern.size()) {
-                return new PatternMatch(true, matchedTokens);
-            }
-            PatternElement element = pattern.get(peekCounter);
+            PatternElement element = pattern.get(patternCounter);
 
             if (element.matches(token)) {
+                // If token matches the current element, add it to matched tokens
                 matchedTokens.add(token);
-                if(element.allowedToAdvance()) peekCounter++; //Skip if element allows us to. This is for "until"
-            } else if(element.isOptional()) {
-                peekCounter++; //Skip if optional and doesnt match
+                peekCounter++; // Advance token stream
+
+                // Advance pattern if allowed by the element
+                if (element.allowedToAdvance()) {
+                    patternCounter++;
+                }
+            } else if (element.isOptional()) {
+                // If element is optional and doesn't match, skip it
+                patternCounter++;
             } else {
+                // If a required element doesn't match, the pattern fails
                 return new PatternMatch(false, matchedTokens);
             }
         }
 
-
-        return new PatternMatch(false, new ArrayList<>());
+        // Check if all required elements in the pattern were matched
+        boolean isCompleteMatch = (patternCounter >= pattern.size());
+        return new PatternMatch(isCompleteMatch, matchedTokens);
     }
 }

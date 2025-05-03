@@ -84,7 +84,7 @@ public enum TokenType {
     TRY("try"),
     CATCH("catch"),
     FINALLY("finally"),
-    ;
+    COMMENT("");
 
     private final String matchingString;
 
