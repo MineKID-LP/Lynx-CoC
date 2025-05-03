@@ -10,7 +10,7 @@ import de.stylabs.lynx.tokenizer.TokenType;
 import java.util.ArrayList;
 import java.util.List;
 
-public class VariableDeclarationRule extends GrammarRule {
+public class VariableDeclarationRule {
     public static AST createNode(TokenStream tokens) {
         //  string reversed = test.reverse(input);  New Assginment
         AST variableDeclaration = new AST(ASTType.VARIABLE_DECLARATION);

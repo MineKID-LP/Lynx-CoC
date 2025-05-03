@@ -9,7 +9,7 @@ import de.stylabs.lynx.tokenizer.TokenType;
 
 import java.util.List;
 
-public class ForLoopRule extends GrammarRule {
+public class ForLoopRule{
     public static AST createNode(TokenStream tokens) {
         AST forLoop = new AST(ASTType.FOR_STATEMENT);
 
@@ -53,7 +53,7 @@ public class ForLoopRule extends GrammarRule {
         AST block = new AST(ASTType.BLOCK_STATEMENT);
         Parser.generateAST(blockTokens, block);
         forLoop.addChild(block);
-
+        tokens.back(); // You barely make sense. Why the fuck do I need this??
         return forLoop;
     }
 

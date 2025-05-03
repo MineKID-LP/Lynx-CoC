@@ -89,7 +89,7 @@ public class TokenStream {
     public TokenStream getBlock() {
         //Extract block tokens from the current index
         expect(TokenType.LEFT_CURLY_BRACKET);
-        int openBraces = 0;
+        int openBraces = 1;
         int startIndex = index + 1;
 
         next(); // Consume the left curly bracket
