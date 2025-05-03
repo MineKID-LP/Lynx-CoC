@@ -83,7 +83,7 @@ public class Parser {
             return FunctionCallRule.createNode(new TokenStream(tokens));
         }
 
-        throw new RuntimeException(String.format("Unexpected %s at: %s:%s", tokenStream.get().type(), tokenStream.get().line(), tokenStream.get().column()));
+        throw new RuntimeException(String.format("Unexpected '%s' at: %s:%s", tokenStream.get().value(), tokenStream.get().line(), tokenStream.get().column()));
     }
 
     public static AST generateAST(List<Token> tokens, AST parent) {
@@ -101,6 +101,20 @@ public class Parser {
     public static AST generateExpression(TokenStream expressionTokens) {
         if (expressionTokens.size() == 0) {
             throw new UnexpectedEOF();
+        }
+
+        if (expressionTokens.size() == 1) {
+            Token token = expressionTokens.get();
+            if (token.type() == TokenType.IDENTIFIER) {
+                return new AST(ASTType.IDENTIFIER, token.value());
+            } else if (token.type() == TokenType.NUMBER_LITERAL) {
+                return new AST(ASTType.NUMBER_LITERAL, token.value());
+            } else if (token.type() == TokenType.STRING_LITERAL) {
+                return new AST(ASTType.STRING_LITERAL, token.value());
+            } else if (token.type() == TokenType.TRUE || token.type() == TokenType.FALSE) {
+                return new AST(ASTType.BOOLEAN, token.value());
+            }
+            throw new RuntimeException(String.format("Unexpected '%s' at: %s:%s", token.value(), token.line(), token.column()));
         }
 
         PatternMatch match = FunctionCallPattern.get().match(expressionTokens);

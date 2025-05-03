@@ -1,5 +1,6 @@
 package de.stylabs.lynx.parser;
 
+import de.stylabs.lynx.errors.UnexpectedEOF;
 import de.stylabs.lynx.tokenizer.Token;
 import de.stylabs.lynx.tokenizer.TokenType;
 
@@ -22,28 +23,28 @@ public class TokenStream {
 
     public Token next() {
         if (!hasNext()) {
-            throw new RuntimeException("No more tokens");
+            throw new RuntimeException(String.format("No more tokens at: %s:%s", tokens.getLast().line(), tokens.getLast().column()));
         }
         return tokens.get(index++);
     }
 
     public Token peek() {
         if (!hasNext()) {
-            throw new RuntimeException("No more tokens");
+            throw new RuntimeException(String.format("No more tokens at: %s:%s", tokens.getLast().line(), tokens.getLast().column()));
         }
         return tokens.get(index + 1);
     }
 
     public Token peek(int offset) {
         if (!hasNext()) {
-            throw new RuntimeException("No more tokens");
+            throw new RuntimeException(String.format("No more tokens at: %s:%s", tokens.getLast().line(), tokens.getLast().column()));
         }
         return tokens.get(index + offset);
     }
 
     public Token get() {
         if (!hasNext()) {
-            throw new RuntimeException("No more tokens");
+            throw new RuntimeException(String.format("No more tokens at: %s:%s", tokens.getLast().line(), tokens.getLast().column()));
         }
         return tokens.get(index);
     }

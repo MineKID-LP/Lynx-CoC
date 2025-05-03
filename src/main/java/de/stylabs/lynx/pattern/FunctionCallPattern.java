@@ -10,6 +10,7 @@ public class FunctionCallPattern extends Pattern {
 
         // Only accept identifiers and dots until we reach a parenthesis
         // them im pretty sure it should be a function call
+        add(TokenType.IDENTIFIER);
         until(TokenType.LEFT_PARENTHESIS, TokenType.IDENTIFIER, TokenType.DOT);
     }
 

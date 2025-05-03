@@ -16,6 +16,10 @@ public class TokenAcceptor {
         return new TokenAcceptor(Arrays.asList(types));
     }
 
+    public static TokenAcceptor all() {
+        return new TokenAcceptor(Arrays.asList(TokenType.values()));
+    }
+
     // Accept tokens until the specified type is reached
     public boolean accepts(Token token) {
         return acceptedTypes.contains(token.type());

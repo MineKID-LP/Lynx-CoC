@@ -4,6 +4,10 @@ import de.stylabs.lynx.tokenizer.Token;
 import de.stylabs.lynx.tokenizer.TokenAcceptor;
 import de.stylabs.lynx.tokenizer.TokenType;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 public class PatternElement {
     private TokenType type = null;
     private TokenAcceptor acceptor = null;
@@ -38,11 +42,15 @@ public class PatternElement {
     public void anyUntil(TokenType tokenType) {
         until = tokenType;
         untilEnabled = true;
+        acceptor = TokenAcceptor.all();
     }
 
     public void until(TokenType until, TokenType[] accepted) {
         this.until = until;
-        this.untilAcceptor = TokenAcceptor.of(accepted);
+        List<TokenType> acceptedTypes = new ArrayList<>();
+        acceptedTypes.addAll(List.of(accepted));
+        acceptedTypes.add(until);
+        this.acceptor = TokenAcceptor.of(acceptedTypes.toArray(TokenType[]::new));
         untilEnabled = true;
     }
 
@@ -53,6 +61,7 @@ public class PatternElement {
             return acceptor.accepts(token);
         }
         if (type != null) return token.type() == type;
+
         throw new RuntimeException("No type or acceptor defined for this pattern element");
     }
 

@@ -15,7 +15,8 @@ public class FunctionCallRule {
         tokens.expect(TokenType.IDENTIFIER);
         AST functionName = new AST(ASTType.FUNCTION_NAME, tokens.next().value());
 
-        while (tokens.get().type().equals(TokenType.DOT)) {
+        while (tokens.hasNext()) {
+            if(!tokens.get().type().equals(TokenType.DOT)) break;
             tokens.skip(); // Skip the dot
             tokens.expect(TokenType.IDENTIFIER);
             functionName.addChild(new AST(ASTType.FUNCTION_NAME, tokens.next().value()));
