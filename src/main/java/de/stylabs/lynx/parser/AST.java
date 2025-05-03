@@ -66,4 +66,8 @@ public class AST {
         json.append("}");
         return json.toString();
     }
+
+    public void setType(ASTType type) {
+        this.type = type;
+    }
 }

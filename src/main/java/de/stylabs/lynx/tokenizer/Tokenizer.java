@@ -104,7 +104,19 @@ public class Tokenizer {
                 continue;
             }
 
-            throw new RuntimeException("Unexpected character: " + c);
+
+            if (Character.isSymbol(c)) {
+                StringBuilder operator = new StringBuilder();
+                int startLine = currentLineNumber;
+                int startColumn = currentColumn + 1;
+                while (hasNext() && Character.isSymbol(peek())) {
+                    operator.append(next());
+                }
+                tokens.add(new Token(TokenType.match(operator.toString()), operator.toString(), startLine, startColumn));
+                continue;
+            }
+
+            throw new RuntimeException(String.format("Unexpected character '%s' at %s:%s", c, currentLineNumber, currentColumn + 1));
         }
     }
 

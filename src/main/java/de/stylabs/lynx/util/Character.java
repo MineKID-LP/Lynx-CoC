@@ -36,4 +36,10 @@ public class Character {
     public static boolean isPunctuation(char c) {
         return c == ',' || c == ';' || c == ':' || c == '.' || c == '?' || c == '!';
     }
+
+    public static boolean isSymbol(char c) {
+        return c == '&' || c == '|' || c == '!' || c == '=' || c == '^' || c == '~' || c == '<' || c == '>' ||
+                c == '(' || c == ')' || c == '{' || c == '}' || c == '[' || c == ']' || c == ';' ||
+                c == '.' || c == ',' || c == ':' || c == '?';
+    }
 }

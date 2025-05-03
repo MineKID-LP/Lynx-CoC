@@ -34,6 +34,13 @@ public class TokenStream {
         return tokens.get(index + 1);
     }
 
+    public Token peek(int offset) {
+        if (!hasNext()) {
+            throw new RuntimeException("No more tokens");
+        }
+        return tokens.get(index + offset);
+    }
+
     public Token get() {
         if (!hasNext()) {
             throw new RuntimeException("No more tokens");
@@ -119,5 +126,43 @@ public class TokenStream {
         } else {
             throw new RuntimeException("No more tokens to go back");
         }
+    }
+
+    public List<Token> until(TokenType tokenType) {
+        List<Token> result = new ArrayList<>();
+        while (hasNext()) {
+            Token token = next();
+            if (token.type() == tokenType) {
+                break;
+            }
+            result.add(token);
+        }
+        return result;
+    }
+
+    public void expectValue(String value) {
+        Token token = get();
+        if (!token.value().equals(value)) {
+            throw new RuntimeException(String.format("Expected %s at: %s:%s", value, token.line(), token.column()));
+        }
+    }
+
+    public void expectValue(String ...values) {
+        Token token = get();
+        for (String value : values) {
+            if (token.value().equals(value)) {
+                return;
+            }
+        }
+        throw new RuntimeException(String.format("Expected one of %s at: %s:%s", Arrays.toString(values), token.line(), token.column()));
+    }
+
+    public List<Token> untilEnd() {
+        List<Token> result = new ArrayList<>();
+        while (hasNext()) {
+            Token token = next();
+            result.add(token);
+        }
+        return result;
     }
 }

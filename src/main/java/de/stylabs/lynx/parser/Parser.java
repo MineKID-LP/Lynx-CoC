@@ -23,6 +23,7 @@ public class Parser {
                 case CLASS -> ClassDeclarationRule.createNode(tokenStream);
                 case FUNCTION -> FunctionDeclarationRule.createNode(tokenStream);
                 case IDENTIFIER -> decideOnWhatTheFuckThisIs(tokenStream, token);
+                case FOR -> ForLoopRule.createNode(tokenStream);
                 default -> throw new RuntimeException(String.format("Unexpected %s at: %s:%s", token.type(), token.line(), token.column()));
             });
         }
@@ -37,9 +38,16 @@ public class Parser {
         //  reversed = "";                          Re-Assginment
         //  print("Original: " + input);            FunctionCall
         //  test.reverse(input);                    FunctionCall
-
+        //  array[1] = 5;                           Array Assignment
+        tokenStream.back();
         Token nextToken = tokenStream.peek();
-        tokenStream.back(); // Go back to the previous token so we can pass it to GrammarRule::createNode
+
+        if (nextToken.type().equals(TokenType.LEFT_SQUARE_BRACKET)){
+            nextToken = tokenStream.peek(2);
+        }
+        if (nextToken.type().equals(TokenType.RIGHT_SQUARE_BRACKET)){
+            nextToken = tokenStream.peek(3);
+        }
 
         if(nextToken.type().equals(TokenType.IDENTIFIER)) {
             // variable declaration
@@ -92,5 +100,14 @@ public class Parser {
         }
 
         return new BlockResult(blockTokens, endIndex);
+    }
+
+    public static AST generateExpression(List<Token> expressionTokens) {
+        return generateExpression(new TokenStream(expressionTokens));
+    }
+
+    public static AST generateExpression(TokenStream expressionTokens) {
+        //TODO: Do this! LMAO GL FUTURE ME YOU LOOSER
+        return new AST(ASTType.EXPRESSION);
     }
 }

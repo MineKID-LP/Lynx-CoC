@@ -6,7 +6,7 @@ import de.stylabs.lynx.parser.Parser;
 import de.stylabs.lynx.parser.TokenStream;
 import de.stylabs.lynx.tokenizer.TokenType;
 
-public class ClassDeclarationRule implements GrammarRule {
+public class ClassDeclarationRule extends GrammarRule {
     public static AST createNode(TokenStream tokens) {
         AST classDeclaration = new AST(ASTType.CLASS_DECLARATION);
         tokens.expect(TokenType.IDENTIFIER);
