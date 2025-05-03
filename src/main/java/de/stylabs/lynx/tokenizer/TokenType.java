@@ -79,7 +79,12 @@ public enum TokenType {
     LOGICAL_AND("&&"),
     LOGICAL_OR("||"),
 
-    NULL("null");
+    NULL("null"),
+
+    TRY("try"),
+    CATCH("catch"),
+    FINALLY("finally"),
+    ;
 
     private final String matchingString;
 

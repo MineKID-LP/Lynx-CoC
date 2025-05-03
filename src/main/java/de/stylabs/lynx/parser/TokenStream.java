@@ -102,7 +102,6 @@ public class TokenStream {
             } else if (token.type() == TokenType.RIGHT_CURLY_BRACKET) {
                 openBraces--;
                 if (openBraces == 0) {
-                    next(); // Consume the closing right curly bracket
                     break;
                 }
             }

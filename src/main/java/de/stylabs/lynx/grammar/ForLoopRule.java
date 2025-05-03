@@ -53,7 +53,7 @@ public class ForLoopRule{
         AST block = new AST(ASTType.BLOCK_STATEMENT);
         Parser.generateAST(blockTokens, block);
         forLoop.addChild(block);
-        tokens.back(); // You barely make sense. Why the fuck do I need this??
+        
         return forLoop;
     }
 
