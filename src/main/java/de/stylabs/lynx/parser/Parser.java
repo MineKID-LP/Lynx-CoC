@@ -142,7 +142,7 @@ public class Parser {
         if(expressionTokens.get().type() == TokenType.LEFT_PARENTHESIS) {
             expression.addChild(generateExpression(expressionTokens.getBlockParenthesis()));
         }
-        
+
 
 
         System.out.println(expressionTokens.asString());

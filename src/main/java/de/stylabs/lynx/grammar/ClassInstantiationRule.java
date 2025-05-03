@@ -17,10 +17,9 @@ public class ClassInstantiationRule {
         classInstantiation.addChild(new AST(ASTType.CLASS_NAME, tokens.next().value()));
 
         tokens.expect(TokenType.LEFT_PARENTHESIS);
-        tokens.skip();
 
         AST parameters = new AST(ASTType.PARAMETER_LIST);
-        TokenStream parameterListTokens = new TokenStream(tokens.until(TokenType.RIGHT_PARENTHESIS));
+        TokenStream parameterListTokens = tokens.getBlockParenthesis();
 
         int parameterCount = 0;
         while (parameterListTokens.hasNext()) {
