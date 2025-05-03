@@ -103,9 +103,13 @@ public class Parser {
             throw new UnexpectedEOF();
         }
 
+        PatternMatch match = FunctionCallPattern.get().match(expressionTokens);
+        if(match.matched()) {
+            System.out.println(match.tokens());
+            return FunctionCallRule.createNode(expressionTokens);
+        }
+
         System.out.println(expressionTokens.toString());
-
-
         return new AST(ASTType.EXPRESSION);
     }
 }

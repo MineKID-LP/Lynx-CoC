@@ -34,11 +34,13 @@ public abstract class Pattern {
     void anyUntil(TokenType tokenType) {
         PatternElement patternElement = new PatternElement();
         patternElement.anyUntil(tokenType);
+        pattern.add(patternElement);
     }
 
     void until(TokenType until, TokenType ...accepted) {
         PatternElement patternElement = new PatternElement();
         patternElement.until(until, accepted);
+        pattern.add(patternElement);
     }
 
     public PatternMatch match(TokenStream tokens) {
@@ -68,9 +70,7 @@ public abstract class Pattern {
                 return new PatternMatch(false, matchedTokens);
             }
         }
-
-        // Check if all required elements in the pattern were matched
-        boolean isCompleteMatch = (patternCounter >= pattern.size());
-        return new PatternMatch(isCompleteMatch, matchedTokens);
+        // Check if we reached the end of the pattern
+        return new PatternMatch(!matchedTokens.isEmpty(), matchedTokens);
     }
 }
