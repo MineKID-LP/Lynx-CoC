@@ -165,4 +165,8 @@ public class TokenStream {
         }
         return result;
     }
+
+    public int size() {
+        return tokens.size();
+    }
 }

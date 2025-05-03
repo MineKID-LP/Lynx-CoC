@@ -1,18 +1,23 @@
 package de.stylabs.lynx.parser;
 
 import de.stylabs.lynx.errors.UnexpectedEOF;
-import de.stylabs.lynx.errors.UnexpectedToken;
 import de.stylabs.lynx.grammar.*;
+import de.stylabs.lynx.pattern.Pattern;
+import de.stylabs.lynx.pattern.PatternMatch;
+import de.stylabs.lynx.pattern.VariableDeclarationPattern;
 import de.stylabs.lynx.tokenizer.Token;
-import de.stylabs.lynx.tokenizer.TokenAcceptor;
 import de.stylabs.lynx.tokenizer.TokenType;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
-import static de.stylabs.lynx.LynxCompiler.print;
 
 public class Parser {
+    private static HashMap<Pattern, GrammarRule> patterns = new HashMap<>() {{
+            put(new VariableDeclarationPattern(), new VariableDeclarationRule());
+    }};
+
     public static AST generateAST(TokenStream tokenStream, AST parent) {
         AST root = (parent == null) ? new AST(ASTType.PROGRAM) : parent;
 
@@ -41,9 +46,15 @@ public class Parser {
         //  array[1] = 5;                           Array Assignment
         tokenStream.back(); // We actually need this token, since we don't know what it is yet
         List<Token> tokens = tokenStream.until(TokenType.SEMICOLON);
+        tokens.add(tokenStream.next());
 
-
-
+        for (Pattern pattern : patterns.keySet()) {
+            PatternMatch match = pattern.match(new TokenStream(tokens));
+            if (match.matched()) {
+                patterns.get(pattern).createNode(new TokenStream(tokens));
+            }
+        }
+        
         return null;
     }
 

@@ -6,7 +6,7 @@ import de.stylabs.lynx.tokenizer.Token;
 
 import java.util.List;
 
-abstract class GrammarRule {
+public abstract class GrammarRule {
     public static AST createNode(TokenStream tokens) {
         throw new RuntimeException("Unimplemented createNode method");
     };
