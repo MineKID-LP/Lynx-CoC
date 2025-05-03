@@ -1,4 +1,4 @@
 package de.stylabs.lynx.pattern;
 
-public class Pattern {
+public abstract class Pattern {
 }

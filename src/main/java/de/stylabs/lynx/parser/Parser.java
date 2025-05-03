@@ -22,7 +22,7 @@ public class Parser {
             root.addChild(switch (token.type()) {
                 case CLASS -> ClassDeclarationRule.createNode(tokenStream);
                 case FUNCTION -> FunctionDeclarationRule.createNode(tokenStream);
-                case IDENTIFIER -> decideOnWhatTheFuckThisIs(tokenStream, token);
+                case IDENTIFIER -> decideOnWhatTheFuckThisIs(tokenStream);
                 case FOR -> ForLoopRule.createNode(tokenStream);
                 default -> throw new RuntimeException(String.format("Unexpected %s at: %s:%s", token.type(), token.line(), token.column()));
             });
@@ -31,7 +31,7 @@ public class Parser {
         return root;
     }
 
-    private static AST decideOnWhatTheFuckThisIs(TokenStream tokenStream, Token token) {
+    private static AST decideOnWhatTheFuckThisIs(TokenStream tokenStream) {
         // This is a bit complex...
         // Examples:
         //  string reversed = test.reverse(input);  New Assginment
@@ -39,32 +39,12 @@ public class Parser {
         //  print("Original: " + input);            FunctionCall
         //  test.reverse(input);                    FunctionCall
         //  array[1] = 5;                           Array Assignment
-        tokenStream.back();
-        Token nextToken = tokenStream.peek();
+        tokenStream.back(); // We actually need this token, since we don't know what it is yet
+        List<Token> tokens = tokenStream.until(TokenType.SEMICOLON);
 
-        if (nextToken.type().equals(TokenType.LEFT_SQUARE_BRACKET)){
-            nextToken = tokenStream.peek(2);
-        }
-        if (nextToken.type().equals(TokenType.RIGHT_SQUARE_BRACKET)){
-            nextToken = tokenStream.peek(3);
-        }
 
-        if(nextToken.type().equals(TokenType.IDENTIFIER)) {
-            // variable declaration
-            return VariableDeclarationRule.createNode(tokenStream);
-        }
 
-        if(nextToken.type().equals(TokenType.LEFT_PARENTHESIS)) {
-            // function call
-            return null;
-        }
-
-        if(nextToken.type().equals(TokenType.ASSIGN)) {
-            // variable re-assignment
-            return null;
-        }
-
-        throw new RuntimeException(String.format("Unexpected %s at: %s:%s", token.type(), token.line(), token.column()));
+        return null;
     }
 
     public static AST generateAST(List<Token> tokens, AST parent) {
