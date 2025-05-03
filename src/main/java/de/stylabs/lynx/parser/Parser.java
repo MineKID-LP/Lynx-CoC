@@ -33,7 +33,7 @@ public class Parser {
                 case THROW -> ThrowRule.createNode(tokenStream);
                 case IF -> IfRule.createNode(tokenStream);
                 case LEFT_PARENTHESIS -> testTernary(tokenStream);
-                case COMMENT -> null;
+                case COMMENT -> null;  //FUCK YOU JAVA AND YOUR SHITTY REGEX IMPLEMENTATION 🖕
                 default -> throw new RuntimeException(String.format("Unexpected %s at: %s:%s", token.type(), token.line(), token.column()));
             };
 
@@ -100,6 +100,7 @@ public class Parser {
 
     public static AST generateExpression(TokenStream expressionTokens) {
         //TODO: Do this! LMAO GL FUTURE ME YOU LOOSER
+        // FUCK YOU PAST ME 🖕🖕🖕🖕
         return new AST(ASTType.EXPRESSION);
     }
 }
