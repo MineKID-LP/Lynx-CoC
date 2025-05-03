@@ -99,8 +99,13 @@ public class Parser {
     }
 
     public static AST generateExpression(TokenStream expressionTokens) {
-        //TODO: Do this! LMAO GL FUTURE ME YOU LOOSER
-        // FUCK YOU PAST ME 🖕🖕🖕🖕
+        if (expressionTokens.size() == 0) {
+            throw new UnexpectedEOF();
+        }
+
+        System.out.println(expressionTokens.toString());
+
+
         return new AST(ASTType.EXPRESSION);
     }
 }

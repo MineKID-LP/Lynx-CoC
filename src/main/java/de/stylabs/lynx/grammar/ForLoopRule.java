@@ -34,14 +34,10 @@ public class ForLoopRule{
         AST variableDeclaration = VariableDeclarationRule.createNode(new TokenStream(variableDeclarationTokens));
         forLoop.addChild(variableDeclaration);
 
-        initStream.skip(); // Skip the semicolon
-
         List<Token> conditionTokens = initStream.until(TokenType.SEMICOLON);
         AST condition = Parser.generateExpression(new TokenStream(conditionTokens));
         condition.setType(ASTType.CONDITION);
         forLoop.addChild(condition);
-
-        initStream.skip(); // Skip the semicolon
 
         List<Token> incrementTokens = initStream.untilEnd();
         AST increment = Parser.generateExpression(new TokenStream(incrementTokens));
