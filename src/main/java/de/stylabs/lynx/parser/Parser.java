@@ -25,6 +25,9 @@ public class Parser {
                 case IDENTIFIER -> decideOnWhatTheFuckThisIs(tokenStream);
                 case FOR -> ForLoopRule.createNode(tokenStream);
                 case RETURN -> ReturnRule.createNode(tokenStream);
+                case TRY -> TryRule.createNode(tokenStream);
+                case THROW -> ThrowRule.createNode(tokenStream);
+                case IF -> IfRule.createNode(tokenStream);
                 default -> throw new RuntimeException(String.format("Unexpected %s at: %s:%s", token.type(), token.line(), token.column()));
             });
         }

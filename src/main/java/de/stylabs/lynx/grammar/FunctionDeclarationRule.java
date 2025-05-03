@@ -25,13 +25,21 @@ public class FunctionDeclarationRule {
                 tokens.skip(); // Skip the closing parenthesis
                 break;
             }
-            if (tokens.peek().type() == TokenType.COMMA) {
+            if (tokens.get().type() == TokenType.COMMA) {
                 tokens.skip(); // Skip the comma
             }
 
             tokens.expect(TokenType.IDENTIFIER); //Type
             AST parameter = new AST(ASTType.PARAMETER);
-            parameter.addChild(new AST(ASTType.TYPE, tokens.next().value()));
+            AST type = new AST(ASTType.TYPE, tokens.next().value());
+            parameter.addChild(type);
+
+            if(tokens.get().type() == TokenType.LEFT_SQUARE_BRACKET) {
+                tokens.skip();
+                tokens.expect(TokenType.RIGHT_SQUARE_BRACKET);
+                tokens.skip();
+                type.addChild(new AST(ASTType.TYPE_SPECIAL, "array"));
+            }
 
             tokens.expect(TokenType.IDENTIFIER); //Type
             parameter.addChild(new AST(ASTType.IDENTIFIER, tokens.next().value()));
