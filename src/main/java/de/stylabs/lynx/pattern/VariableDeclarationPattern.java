@@ -16,4 +16,8 @@ public class VariableDeclarationPattern extends Pattern {
         add(TokenType.ASSIGN);
         anyUntil(TokenType.SEMICOLON);
     }
+
+    public static VariableDeclarationPattern get() {
+        return new VariableDeclarationPattern();
+    }
 }

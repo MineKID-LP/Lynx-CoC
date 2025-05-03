@@ -2,21 +2,16 @@ package de.stylabs.lynx.parser;
 
 import de.stylabs.lynx.errors.UnexpectedEOF;
 import de.stylabs.lynx.grammar.*;
-import de.stylabs.lynx.pattern.Pattern;
 import de.stylabs.lynx.pattern.PatternMatch;
 import de.stylabs.lynx.pattern.VariableDeclarationPattern;
 import de.stylabs.lynx.tokenizer.Token;
 import de.stylabs.lynx.tokenizer.TokenType;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 
 public class Parser {
-    private static HashMap<Pattern, GrammarRule> patterns = new HashMap<>() {{
-            put(new VariableDeclarationPattern(), new VariableDeclarationRule());
-    }};
 
     public static AST generateAST(TokenStream tokenStream, AST parent) {
         AST root = (parent == null) ? new AST(ASTType.PROGRAM) : parent;
@@ -29,6 +24,7 @@ public class Parser {
                 case FUNCTION -> FunctionDeclarationRule.createNode(tokenStream);
                 case IDENTIFIER -> decideOnWhatTheFuckThisIs(tokenStream);
                 case FOR -> ForLoopRule.createNode(tokenStream);
+                case RETURN -> ReturnRule.createNode(tokenStream);
                 default -> throw new RuntimeException(String.format("Unexpected %s at: %s:%s", token.type(), token.line(), token.column()));
             });
         }
@@ -46,15 +42,16 @@ public class Parser {
         //  array[1] = 5;                           Array Assignment
         tokenStream.back(); // We actually need this token, since we don't know what it is yet
         List<Token> tokens = tokenStream.until(TokenType.SEMICOLON);
+        tokenStream.back();
         tokens.add(tokenStream.next());
+        TokenStream statementStream = new TokenStream(tokens);
 
-        for (Pattern pattern : patterns.keySet()) {
-            PatternMatch match = pattern.match(new TokenStream(tokens));
-            if (match.matched()) {
-                patterns.get(pattern).createNode(new TokenStream(tokens));
-            }
+        PatternMatch match = VariableDeclarationPattern.get().match(statementStream);
+        if(match.matched()) {
+            VariableDeclarationRule.createNode(new TokenStream(tokens));
         }
-        
+
+
         return null;
     }
 

@@ -56,7 +56,11 @@ public abstract class Pattern {
             if (element.matches(token)) {
                 matchedTokens.add(token);
                 if(element.allowedToAdvance()) peekCounter++; //Skip if element allows us to. This is for "until"
-            } else if(element.isOptional()) peekCounter++; //Skip if optional and doesnt match
+            } else if(element.isOptional()) {
+                peekCounter++; //Skip if optional and doesnt match
+            } else {
+                return new PatternMatch(false, matchedTokens);
+            }
         }
 
 
