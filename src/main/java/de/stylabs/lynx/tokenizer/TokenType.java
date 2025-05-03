@@ -56,6 +56,11 @@ public enum TokenType {
     GREATER_THAN(">"),
     LESS_THAN_EQUALS("<="),
     GREATER_THAN_EQUALS(">="),
+    ADD_ASSIGN("+="),
+    SUBTRACT_ASSIGN("-="),
+    MULTIPLY_ASSIGN("*="),
+    DIVIDE_ASSIGN("/="),
+    MODULO_ASSIGN("%="),
 
     ASSIGN("="),
 
@@ -113,5 +118,9 @@ public enum TokenType {
             case '?' -> QUESTION;
             default -> IDENTIFIER;
         };
+    }
+
+    public static String aliasof(TokenType tokenType) {
+        return (tokenType.matchingString.isEmpty()) ? tokenType.name() : tokenType.matchingString;
     }
 }

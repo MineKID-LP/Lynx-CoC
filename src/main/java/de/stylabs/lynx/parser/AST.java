@@ -16,6 +16,12 @@ public class AST {
         this.children = new ArrayList<>();
     }
 
+    public AST(ASTType type, String value) {
+        this.type = type;
+        this.value = value;
+        this.children = new ArrayList<>();
+    }
+
     public AST(ASTType type, TokenType tokenType, String value) {
         this.type = type;
         this.value = value;
