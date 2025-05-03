@@ -38,7 +38,7 @@ public class ForLoopRule{
 
         List<Token> conditionTokens = initStream.until(TokenType.SEMICOLON);
         AST condition = Parser.generateExpression(new TokenStream(conditionTokens));
-        condition.setType(ASTType.FOR_CONDITION);
+        condition.setType(ASTType.CONDITION);
         forLoop.addChild(condition);
 
         initStream.skip(); // Skip the semicolon

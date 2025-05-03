@@ -28,11 +28,29 @@ public class Parser {
                 case TRY -> TryRule.createNode(tokenStream);
                 case THROW -> ThrowRule.createNode(tokenStream);
                 case IF -> IfRule.createNode(tokenStream);
+                case LEFT_PARENTHESIS -> testTernary(tokenStream);
                 default -> throw new RuntimeException(String.format("Unexpected %s at: %s:%s", token.type(), token.line(), token.column()));
             });
         }
 
         return root;
+    }
+
+    // This is maybe not the best way to do this, but I don't really care rn
+    // TODO: FIX
+    private static AST testTernary(TokenStream tokenStream) {
+        int peekCounter = 1;
+
+        while (peekCounter < tokenStream.size()) {
+            if(tokenStream.peek(peekCounter).type().equals(TokenType.RIGHT_PARENTHESIS)) {
+                if (tokenStream.peek(peekCounter + 1).type().equals(TokenType.QUESTION)) {
+                    return TernaryExpressionRule.createNode(tokenStream);
+                }
+            }
+            peekCounter++;
+        }
+
+        throw new RuntimeException(String.format("Unexpected %s at: %s:%s", tokenStream.get().type(), tokenStream.get().line(), tokenStream.get().column()));
     }
 
     private static AST decideOnWhatTheFuckThisIs(TokenStream tokenStream) {
