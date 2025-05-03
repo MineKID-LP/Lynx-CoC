@@ -69,11 +69,10 @@ public class Parser {
 
         PatternMatch match = VariableDeclarationPattern.get().match(statementStream);
         if(match.matched()) {
-            VariableDeclarationRule.createNode(new TokenStream(tokens));
+            return VariableDeclarationRule.createNode(new TokenStream(tokens));
         }
 
-
-        return null;
+        throw new RuntimeException(String.format("Unexpected %s at: %s:%s", tokenStream.get().type(), tokenStream.get().line(), tokenStream.get().column()));
     }
 
     public static AST generateAST(List<Token> tokens, AST parent) {
