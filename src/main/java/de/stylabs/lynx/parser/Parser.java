@@ -2,10 +2,7 @@ package de.stylabs.lynx.parser;
 
 import de.stylabs.lynx.errors.UnexpectedEOF;
 import de.stylabs.lynx.grammar.*;
-import de.stylabs.lynx.pattern.FunctionCallPattern;
-import de.stylabs.lynx.pattern.PatternMatch;
-import de.stylabs.lynx.pattern.VariableAssignmentPattern;
-import de.stylabs.lynx.pattern.VariableDeclarationPattern;
+import de.stylabs.lynx.pattern.*;
 import de.stylabs.lynx.tokenizer.Token;
 import de.stylabs.lynx.tokenizer.TokenType;
 
@@ -119,11 +116,36 @@ public class Parser {
 
         PatternMatch match = FunctionCallPattern.get().match(expressionTokens);
         if(match.matched()) {
-            System.out.println(match.tokens());
-            return FunctionCallRule.createNode(expressionTokens);
+            AST node = FunctionCallRule.createNode(expressionTokens);
+
+            if(!expressionTokens.hasNext()) return node;
         }
 
-        System.out.println(expressionTokens.toString());
+        match = ArrayInstantiationPattern.get().match(expressionTokens);
+        if(match.matched()) {
+            return ArrayInstantiationRule.createNode(expressionTokens);
+        }
+
+        match = ClassInstantiationPattern.get().match(expressionTokens);
+        if (match.matched()) {
+            return ClassInstantiationRule.createNode(expressionTokens);
+        }
+
+        match = ArrayIndexPattern.get().match(expressionTokens);
+        if (match.matched()) {
+            //['characters', '[', 'characters', '.', 'length', '(', ')', '-', '1', '-', 'i', ']']
+            return ArrayIndexRule.createNode(expressionTokens);
+        }
+
+        AST expression = new AST(ASTType.EXPRESSION);
+
+        if(expressionTokens.get().type() == TokenType.LEFT_PARENTHESIS) {
+            expression.addChild(generateExpression(expressionTokens.getBlockParenthesis()));
+        }
+        
+
+
+        System.out.println(expressionTokens.asString());
         return new AST(ASTType.EXPRESSION);
     }
 }

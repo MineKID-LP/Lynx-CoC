@@ -14,6 +14,7 @@ public class IfRule {
         AST ifStatement = new AST(ASTType.IF_STATEMENT);
 
         tokens.expect(TokenType.LEFT_PARENTHESIS);
+        tokens.skip();
         List<Token> conditionTokens = tokens.until(TokenType.RIGHT_PARENTHESIS);
 
         AST condition = Parser.generateExpression(conditionTokens);

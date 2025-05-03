@@ -91,7 +91,6 @@ public class TokenStream {
         //Extract block tokens from the current index
         expect(TokenType.LEFT_CURLY_BRACKET);
         int openBraces = 1;
-        int startIndex = index + 1;
 
         next(); // Consume the left curly bracket
 
@@ -101,6 +100,31 @@ public class TokenStream {
             if (token.type() == TokenType.LEFT_CURLY_BRACKET) {
                 openBraces++;
             } else if (token.type() == TokenType.RIGHT_CURLY_BRACKET) {
+                openBraces--;
+                if (openBraces == 0) {
+                    break;
+                }
+            }
+            blockTokens.add(token);
+        }
+
+        return new TokenStream(blockTokens);
+    }
+
+
+    public TokenStream getBlockParenthesis() {
+        //Extract block tokens from the current index
+        expect(TokenType.LEFT_PARENTHESIS);
+        int openBraces = 1;
+
+        next(); // Consume the left curly bracket
+
+        List<Token> blockTokens = new ArrayList<>();
+        while (hasNext()) {
+            Token token = next();
+            if (token.type() == TokenType.LEFT_PARENTHESIS) {
+                openBraces++;
+            } else if (token.type() == TokenType.RIGHT_PARENTHESIS) {
                 openBraces--;
                 if (openBraces == 0) {
                     break;
@@ -169,4 +193,18 @@ public class TokenStream {
     public int size() {
         return tokens.size();
     }
+
+    public String asString() {
+        StringBuilder result = new StringBuilder();
+        result.append('[');
+        for (Token token : tokens) {
+            result.append('\'');
+            result.append(token.value());
+            result.append("', ");
+        }
+        result.delete(result.length() - 2, result.length());
+        result.append(']');
+        return result.toString();
+    }
+
 }
