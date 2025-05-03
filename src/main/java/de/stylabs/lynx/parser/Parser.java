@@ -84,33 +84,6 @@ public class Parser {
         return generateAST(new TokenStream(tokens), null);
     }
 
-    private static BlockResult extractBlockTokens(List<Token> tokens, int startIndex) {
-        List<Token> blockTokens = new ArrayList<>();
-        int openBraces = 0;
-        int endIndex = startIndex;
-
-        for (int i = startIndex; i < tokens.size(); i++) {
-            Token token = tokens.get(i);
-            blockTokens.add(token);
-
-            if (token.type().equals(TokenType.LEFT_CURLY_BRACKET)) {
-                openBraces++;
-            } else if (token.type().equals(TokenType.RIGHT_CURLY_BRACKET)) {
-                openBraces--;
-                if (openBraces == 0) {
-                    endIndex = i; // Update endIndex to the position after the closing brace
-                    break;
-                }
-            }
-        }
-
-        if (openBraces != 0) {
-            throw new UnexpectedEOF();
-        }
-
-        return new BlockResult(blockTokens, endIndex);
-    }
-
     public static AST generateExpression(List<Token> expressionTokens) {
         return generateExpression(new TokenStream(expressionTokens));
     }
