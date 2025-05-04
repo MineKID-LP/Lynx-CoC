@@ -22,6 +22,8 @@ public class FunctionCallRule {
             functionName.addChild(new AST(ASTType.FUNCTION_NAME, tokens.next().value()));
         }
 
+        functionCall.addChild(functionName);
+
         tokens.expect(TokenType.LEFT_PARENTHESIS);
         AST parameters = new AST(ASTType.PARAMETER_LIST);
 

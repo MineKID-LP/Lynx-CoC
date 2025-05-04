@@ -11,7 +11,7 @@ import java.util.List;
 
 public class ArrayIndexRule {
     public static AST createNode(TokenStream tokens) {
-        AST arrayIndex = new AST(ASTType.RETURN_STATEMENT);
+        AST arrayIndex = new AST(ASTType.ARRAY_INDEX);
 
         tokens.expect(TokenType.IDENTIFIER);
         arrayIndex.addChild(new AST(ASTType.IDENTIFIER, tokens.next().value()));

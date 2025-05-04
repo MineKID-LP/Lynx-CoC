@@ -140,12 +140,81 @@ public class Parser {
         AST expression = new AST(ASTType.EXPRESSION);
 
         if(expressionTokens.get().type() == TokenType.LEFT_PARENTHESIS) {
-            expression.addChild(generateExpression(expressionTokens.getBlockParenthesis()));
+            AST left = generateExpression(expressionTokens.getBlockParenthesis());
+            AST right = generateExpression(expressionTokens.untilEnd());
+            if(left.getType() == ASTType.EXPRESSION) left.setType(ASTType.LEFT_EXPRESSION);
+            if(right.getType() == ASTType.EXPRESSION) right.setType(ASTType.RIGHT_EXPRESSION);
+            expression.addChild(left);
+            expression.addChild(new AST(ASTType.OPERATOR, "parenthesis"));
+            expression.addChild(right);
+            return expression;
+        }
+
+        if(expressionTokens.get().type().equals(TokenType.IDENTIFIER)) {
+            Token next = expressionTokens.peek();
+            if(next.type().equals(TokenType.INCREMENT)) {
+                expression.addChild(new AST(ASTType.IDENTIFIER, expressionTokens.next().value()));
+                expression.addChild(new AST(ASTType.TYPE_SPECIAL, "increment"));
+                return expression;
+            } else if(next.type().equals(TokenType.DECREMENT)) {
+                expression.addChild(new AST(ASTType.IDENTIFIER, expressionTokens.next().value()));
+                expression.addChild(new AST(ASTType.TYPE_SPECIAL, "decrement"));
+                return expression;
+            }
         }
 
 
+        Token highestPrecedenceToken = expressionTokens.get();
+        expressionTokens.reset();
+        while (expressionTokens.hasNext()) {
+            Token token = expressionTokens.next();
 
-        System.out.println(expressionTokens.asString());
-        return new AST(ASTType.EXPRESSION);
+            if (getPrecedence(token.type()) > getPrecedence(highestPrecedenceToken.type())) {
+                highestPrecedenceToken = token;
+            }
+        }
+        expressionTokens.reset();
+
+        TokenStream leftTokens = new TokenStream(expressionTokens.until(highestPrecedenceToken.type()));
+        TokenStream rightTokens = new TokenStream(expressionTokens.untilEnd());
+        if(leftTokens.hasNext()) {
+            AST leftExp = generateExpression(leftTokens);
+            if(leftExp.getType() == ASTType.EXPRESSION) leftExp.setType(ASTType.LEFT_EXPRESSION);
+            else leftExp.setType(ASTType.EXPRESSION);
+            expression.addChild(leftExp);
+        }
+        expression.addChild(new AST(ASTType.OPERATOR, highestPrecedenceToken.value()));
+        if(rightTokens.hasNext()) {
+            AST rightExp = generateExpression(rightTokens);
+            if(rightExp.getType() == ASTType.EXPRESSION) rightExp.setType(ASTType.RIGHT_EXPRESSION);
+            else rightExp.setType(ASTType.EXPRESSION);
+            expression.addChild(rightExp);
+        }
+        return expression;
+    }
+
+
+    private static int getPrecedence(TokenType type) {
+        switch (type) {
+            case MULTIPLY:
+            case DIVIDE:
+            case MODULO:
+                return 3; // High precedence
+            case PLUS:
+            case MINUS:
+                return 2; // Medium precedence
+            case LESS_THAN:
+            case LESS_THAN_EQUALS:
+            case GREATER_THAN:
+            case GREATER_THAN_EQUALS:
+            case EQUALS:
+            case NOT_EQUALS:
+                return 1; // Low precedence
+            case LOGICAL_AND:
+            case LOGICAL_OR:
+                return 0; // Lowest precedence
+            default:
+                return -1; // Invalid or unknown token
+        }
     }
 }
