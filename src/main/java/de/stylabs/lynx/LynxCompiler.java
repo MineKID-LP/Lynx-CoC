@@ -10,12 +10,12 @@ import java.io.IOException;
 
 public class LynxCompiler {
     public static void main(String[] args) {
-        File file = new File("./outline.lynx");
+        File file = new File("./expression.lynx");
         Tokenizer tokenizer = new Tokenizer(file);
         tokenizer.tokenize();
 
         try {
-            FileOutputStream tokensOut = new FileOutputStream(new File("./outline.tokens"));
+            FileOutputStream tokensOut = new FileOutputStream(new File("./expression.tokens"));
             for (var token : tokenizer.getTokens()) {
                 String tokenString = token.type() + " " + token.value() + "\n";
                 tokensOut.write(tokenString.getBytes());
@@ -26,7 +26,7 @@ public class LynxCompiler {
         try {
             AST ast = Parser.generateAST(tokenizer.getTokens());
 
-            FileOutputStream astOut = new FileOutputStream(new File("./outline.ast"));
+            FileOutputStream astOut = new FileOutputStream(new File("./expression.ast"));
             astOut.write(ast.toJSON().getBytes());
         } catch (Throwable e) {
             throw new RuntimeException(e);

@@ -31,8 +31,9 @@ public class VariableDeclarationRule {
         tokens.skip(); // Skip the assignment operator
 
         List<Token> expressionTokens = tokens.until(TokenType.SEMICOLON); // Gobble everything up, up to the next semicolon
-
-        variableDeclaration.addChild(Parser.generateExpression(expressionTokens));
+        AST assignment = new AST(ASTType.VALUE_ASSIGNMENT );
+        assignment.addChild(Parser.generateExpression(expressionTokens));
+        variableDeclaration.addChild(assignment);
 
         return variableDeclaration;
     }

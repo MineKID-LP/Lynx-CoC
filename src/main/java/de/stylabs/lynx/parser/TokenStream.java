@@ -1,11 +1,11 @@
 package de.stylabs.lynx.parser;
 
-import de.stylabs.lynx.errors.UnexpectedEOF;
 import de.stylabs.lynx.tokenizer.Token;
 import de.stylabs.lynx.tokenizer.TokenType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 public class TokenStream {
@@ -43,9 +43,6 @@ public class TokenStream {
     }
 
     public Token get() {
-        if (!hasNext()) {
-            throw new RuntimeException(String.format("No more tokens at: %s:%s", tokens.getLast().line(), tokens.getLast().column()));
-        }
         return tokens.get(index);
     }
 
@@ -207,4 +204,7 @@ public class TokenStream {
         return result.toString();
     }
 
+    public List<Token> toList() {
+        return new ArrayList<>(tokens);
+    }
 }

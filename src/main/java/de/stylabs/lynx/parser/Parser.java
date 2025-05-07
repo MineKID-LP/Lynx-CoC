@@ -9,8 +9,8 @@ import de.stylabs.lynx.tokenizer.TokenType;
 import java.util.ArrayList;
 import java.util.List;
 
+import static de.stylabs.lynx.LynxCompiler.print;
 import static java.util.Objects.isNull;
-
 
 public class Parser {
 
@@ -103,7 +103,7 @@ public class Parser {
         if (expressionTokens.size() == 1) {
             Token token = expressionTokens.get();
             if (token.type() == TokenType.IDENTIFIER) {
-                return new AST(ASTType.IDENTIFIER, token.value());
+                return new AST(ASTType.VARIABLE_GET, token.value());
             } else if (token.type() == TokenType.NUMBER_LITERAL) {
                 return new AST(ASTType.NUMBER_LITERAL, token.value());
             } else if (token.type() == TokenType.STRING_LITERAL) {
@@ -116,105 +116,37 @@ public class Parser {
 
         PatternMatch match = FunctionCallPattern.get().match(expressionTokens);
         if(match.matched()) {
+            //Get rid of standalone function calls
             AST node = FunctionCallRule.createNode(expressionTokens);
-
+            if(!expressionTokens.hasNext()) return node;
+        }
+        match = ArrayInstantiationPattern.get().match(expressionTokens);
+        if(match.matched()) {
+            AST node = ArrayInstantiationRule.createNode(expressionTokens);
+            //Only if its consumed whole
+            if(!expressionTokens.hasNext()) return node;
+        }
+        match = ArrayIndexPattern.get().match(expressionTokens);
+        if (match.matched()) {
+            AST node = ArrayIndexRule.createNode(expressionTokens);
             if(!expressionTokens.hasNext()) return node;
         }
 
-        match = ArrayInstantiationPattern.get().match(expressionTokens);
-        if(match.matched()) {
-            return ArrayInstantiationRule.createNode(expressionTokens);
-        }
+        
 
-        match = ClassInstantiationPattern.get().match(expressionTokens);
-        if (match.matched()) {
-            return ClassInstantiationRule.createNode(expressionTokens);
-        }
+        print(expressionTokens.asString());
 
-        match = ArrayIndexPattern.get().match(expressionTokens);
-        if (match.matched()) {
-            //['characters', '[', 'characters', '.', 'length', '(', ')', '-', '1', '-', 'i', ']']
-            return ArrayIndexRule.createNode(expressionTokens);
-        }
-
-        AST expression = new AST(ASTType.EXPRESSION);
-
-        if(expressionTokens.get().type() == TokenType.LEFT_PARENTHESIS) {
-            AST left = generateExpression(expressionTokens.getBlockParenthesis());
-            AST right = generateExpression(expressionTokens.untilEnd());
-            if(left.getType() == ASTType.EXPRESSION) left.setType(ASTType.LEFT_EXPRESSION);
-            if(right.getType() == ASTType.EXPRESSION) right.setType(ASTType.RIGHT_EXPRESSION);
-            expression.addChild(left);
-            expression.addChild(new AST(ASTType.OPERATOR, "parenthesis"));
-            expression.addChild(right);
-            return expression;
-        }
-
-        if(expressionTokens.get().type().equals(TokenType.IDENTIFIER)) {
-            Token next = expressionTokens.peek();
-            if(next.type().equals(TokenType.INCREMENT)) {
-                expression.addChild(new AST(ASTType.IDENTIFIER, expressionTokens.next().value()));
-                expression.addChild(new AST(ASTType.TYPE_SPECIAL, "increment"));
-                return expression;
-            } else if(next.type().equals(TokenType.DECREMENT)) {
-                expression.addChild(new AST(ASTType.IDENTIFIER, expressionTokens.next().value()));
-                expression.addChild(new AST(ASTType.TYPE_SPECIAL, "decrement"));
-                return expression;
-            }
-        }
-
-
-        Token highestPrecedenceToken = expressionTokens.get();
-        expressionTokens.reset();
-        while (expressionTokens.hasNext()) {
-            Token token = expressionTokens.next();
-
-            if (getPrecedence(token.type()) > getPrecedence(highestPrecedenceToken.type())) {
-                highestPrecedenceToken = token;
-            }
-        }
-        expressionTokens.reset();
-
-        TokenStream leftTokens = new TokenStream(expressionTokens.until(highestPrecedenceToken.type()));
-        TokenStream rightTokens = new TokenStream(expressionTokens.untilEnd());
-        if(leftTokens.hasNext()) {
-            AST leftExp = generateExpression(leftTokens);
-            if(leftExp.getType() == ASTType.EXPRESSION) leftExp.setType(ASTType.LEFT_EXPRESSION);
-            else leftExp.setType(ASTType.EXPRESSION);
-            expression.addChild(leftExp);
-        }
-        expression.addChild(new AST(ASTType.OPERATOR, highestPrecedenceToken.value()));
-        if(rightTokens.hasNext()) {
-            AST rightExp = generateExpression(rightTokens);
-            if(rightExp.getType() == ASTType.EXPRESSION) rightExp.setType(ASTType.RIGHT_EXPRESSION);
-            else rightExp.setType(ASTType.EXPRESSION);
-            expression.addChild(rightExp);
-        }
-        return expression;
+        return new AST(ASTType.UNKNOWN);
     }
 
 
     private static int getPrecedence(TokenType type) {
-        switch (type) {
-            case MULTIPLY:
-            case DIVIDE:
-            case MODULO:
-                return 3; // High precedence
-            case PLUS:
-            case MINUS:
-                return 2; // Medium precedence
-            case LESS_THAN:
-            case LESS_THAN_EQUALS:
-            case GREATER_THAN:
-            case GREATER_THAN_EQUALS:
-            case EQUALS:
-            case NOT_EQUALS:
-                return 1; // Low precedence
-            case LOGICAL_AND:
-            case LOGICAL_OR:
-                return 0; // Lowest precedence
-            default:
-                return -1; // Invalid or unknown token
-        }
+        return switch (type) {
+            case MULTIPLY, DIVIDE, MODULO -> 3; // High precedence
+            case PLUS, MINUS -> 2; // Medium precedence
+            case LESS_THAN, LESS_THAN_EQUALS, GREATER_THAN, GREATER_THAN_EQUALS, EQUALS, NOT_EQUALS -> 1; // Low precedence
+            case LOGICAL_AND, LOGICAL_OR -> 0; // Lowest precedence
+            default -> -1; // Invalid or unknown token
+        };
     }
 }

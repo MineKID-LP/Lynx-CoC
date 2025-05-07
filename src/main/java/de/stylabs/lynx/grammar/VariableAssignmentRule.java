@@ -31,7 +31,10 @@ public class VariableAssignmentRule {
         tokens.skip(); // Skip the assignment operator
 
         List<Token> expressionTokens = tokens.until(TokenType.SEMICOLON);
-        variableAssignment.addChild(Parser.generateExpression(expressionTokens));
+        AST assignment = new AST(ASTType.VALUE_ASSIGNMENT );
+        assignment.addChild(Parser.generateExpression(expressionTokens));
+        variableAssignment.addChild(assignment);
+
 
         return variableAssignment;
     }
