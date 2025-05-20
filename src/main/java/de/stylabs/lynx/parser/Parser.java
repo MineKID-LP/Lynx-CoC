@@ -6,7 +6,6 @@ import de.stylabs.lynx.pattern.*;
 import de.stylabs.lynx.tokenizer.Token;
 import de.stylabs.lynx.tokenizer.TokenType;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static de.stylabs.lynx.LynxCompiler.print;
@@ -17,7 +16,7 @@ public class Parser {
     public static AST generateAST(TokenStream tokenStream, AST parent) {
         AST root = (parent == null) ? new AST(ASTType.PROGRAM) : parent;
 
-        while(tokenStream.hasNext()) {
+        while (tokenStream.hasNext()) {
             Token token = tokenStream.next();
 
             AST child = switch (token.type()) {
@@ -30,11 +29,13 @@ public class Parser {
                 case THROW -> ThrowRule.createNode(tokenStream);
                 case IF -> IfRule.createNode(tokenStream);
                 case LEFT_PARENTHESIS -> testTernary(tokenStream);
-                case COMMENT -> null;  //FUCK YOU JAVA AND YOUR SHITTY REGEX IMPLEMENTATION 🖕
-                default -> throw new RuntimeException(String.format("Unexpected %s at: %s:%s", token.type(), token.line(), token.column()));
+                case COMMENT -> null; // FUCK YOU JAVA AND YOUR SHITTY REGEX IMPLEMENTATION 🖕
+                default -> throw new RuntimeException(
+                        String.format("Unexpected %s at: %s:%s", token.type(), token.line(), token.column()));
             };
 
-            if(!isNull(child)) root.addChild(child);
+            if (!isNull(child))
+                root.addChild(child);
         }
 
         return root;
@@ -46,7 +47,7 @@ public class Parser {
         int peekCounter = 1;
 
         while (peekCounter < tokenStream.size()) {
-            if(tokenStream.peek(peekCounter).type().equals(TokenType.RIGHT_PARENTHESIS)) {
+            if (tokenStream.peek(peekCounter).type().equals(TokenType.RIGHT_PARENTHESIS)) {
                 if (tokenStream.peek(peekCounter + 1).type().equals(TokenType.QUESTION)) {
                     return TernaryExpressionRule.createNode(tokenStream);
                 }
@@ -54,7 +55,8 @@ public class Parser {
             peekCounter++;
         }
 
-        throw new RuntimeException(String.format("Unexpected %s at: %s:%s", tokenStream.get().type(), tokenStream.get().line(), tokenStream.get().column()));
+        throw new RuntimeException(String.format("Unexpected %s at: %s:%s", tokenStream.get().type(),
+                tokenStream.get().line(), tokenStream.get().column()));
     }
 
     private static AST decideOnWhatTheFuckThisIs(TokenStream tokenStream) {
@@ -66,21 +68,22 @@ public class Parser {
         TokenStream statementStream = new TokenStream(tokens);
 
         PatternMatch match = VariableDeclarationPattern.get().match(statementStream);
-        if(match.matched()) {
+        if (match.matched()) {
             return VariableDeclarationRule.createNode(new TokenStream(tokens));
         }
 
         match = VariableAssignmentPattern.get().match(statementStream);
-        if(match.matched()) {
+        if (match.matched()) {
             return VariableAssignmentRule.createNode(new TokenStream(tokens));
         }
 
         match = FunctionCallPattern.get().match(statementStream);
-        if(match.matched()) {
+        if (match.matched()) {
             return FunctionCallRule.createNode(new TokenStream(tokens));
         }
 
-        throw new RuntimeException(String.format("Unexpected '%s' at: %s:%s", tokenStream.get().value(), tokenStream.get().line(), tokenStream.get().column()));
+        throw new RuntimeException(String.format("Unexpected '%s' at: %s:%s", tokenStream.get().value(),
+                tokenStream.get().line(), tokenStream.get().column()));
     }
 
     public static AST generateAST(List<Token> tokens, AST parent) {
@@ -111,40 +114,42 @@ public class Parser {
             } else if (token.type() == TokenType.TRUE || token.type() == TokenType.FALSE) {
                 return new AST(ASTType.BOOLEAN, token.value());
             }
-            throw new RuntimeException(String.format("Unexpected '%s' at: %s:%s", token.value(), token.line(), token.column()));
+            throw new RuntimeException(
+                    String.format("Unexpected '%s' at: %s:%s", token.value(), token.line(), token.column()));
         }
 
         PatternMatch match = FunctionCallPattern.get().match(expressionTokens);
-        if(match.matched()) {
-            //Get rid of standalone function calls
+        if (match.matched()) {
+            // Get rid of standalone function calls
             AST node = FunctionCallRule.createNode(expressionTokens);
-            if(!expressionTokens.hasNext()) return node;
+            if (!expressionTokens.hasNext())
+                return node;
         }
         match = ArrayInstantiationPattern.get().match(expressionTokens);
-        if(match.matched()) {
+        if (match.matched()) {
             AST node = ArrayInstantiationRule.createNode(expressionTokens);
-            //Only if its consumed whole
-            if(!expressionTokens.hasNext()) return node;
+            // Only if its consumed whole
+            if (!expressionTokens.hasNext())
+                return node;
         }
         match = ArrayIndexPattern.get().match(expressionTokens);
         if (match.matched()) {
             AST node = ArrayIndexRule.createNode(expressionTokens);
-            if(!expressionTokens.hasNext()) return node;
+            if (!expressionTokens.hasNext())
+                return node;
         }
-
-        
 
         print(expressionTokens.asString());
 
         return new AST(ASTType.UNKNOWN);
     }
 
-
     private static int getPrecedence(TokenType type) {
         return switch (type) {
             case MULTIPLY, DIVIDE, MODULO -> 3; // High precedence
             case PLUS, MINUS -> 2; // Medium precedence
-            case LESS_THAN, LESS_THAN_EQUALS, GREATER_THAN, GREATER_THAN_EQUALS, EQUALS, NOT_EQUALS -> 1; // Low precedence
+            case LESS_THAN, LESS_THAN_EQUALS, GREATER_THAN, GREATER_THAN_EQUALS, EQUALS, NOT_EQUALS -> 1; // Low
+                                                                                                          // precedence
             case LOGICAL_AND, LOGICAL_OR -> 0; // Lowest precedence
             default -> -1; // Invalid or unknown token
         };
