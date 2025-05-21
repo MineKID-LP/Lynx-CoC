@@ -1,5 +1,7 @@
 package de.stylabs.lynx;
 
+import de.stylabs.lynx.generator.Architecture;
+import de.stylabs.lynx.generator.Generator;
 import de.stylabs.lynx.parser.AST;
 import de.stylabs.lynx.parser.Parser;
 import de.stylabs.lynx.tokenizer.Tokenizer;
@@ -14,6 +16,8 @@ public class LynxCompiler {
         Tokenizer tokenizer = new Tokenizer(file);
         tokenizer.tokenize();
         AST ast = Parser.generateAST(tokenizer.getTokens());
+
+        String asm = Generator.generateASM(ast, Architecture.x86_64);
 
         try {
             FileOutputStream astOut = new FileOutputStream(new File("./out.ast"));
