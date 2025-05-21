@@ -44,3 +44,4 @@ bin/
 /.idea/
 /gradle/
 /run/
+/syntax-highlighting-vs
