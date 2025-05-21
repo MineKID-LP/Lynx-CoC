@@ -41,6 +41,11 @@ public class MathParser {
             }
         }
 
+        if(!subTokens.isEmpty()) {
+            mathTokens.add(new MathToken(Operator.NONE, new TokenStream(new ArrayList<>(){{addAll(subTokens);}})));
+            subTokens.clear();
+        }
+
         mathTokens = infixToPostfix(mathTokens);
 
         AST ast = new AST(ASTType.EXPRESSION);

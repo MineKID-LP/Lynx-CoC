@@ -70,6 +70,13 @@ public abstract class Pattern {
                 return new PatternMatch(false, matchedTokens);
             }
         }
+
+        PatternElement lastElement = pattern.getLast();
+        if (!lastElement.isOptional() && !lastElement.allowedToAdvance()) {
+            // If the last element is not optional and we can't advance, e.g. the until wasn't reached
+            return new PatternMatch(false, matchedTokens);
+        }
+
         // Check if we reached the end of the pattern
         return new PatternMatch(!matchedTokens.isEmpty(), matchedTokens);
     }

@@ -10,7 +10,7 @@ import java.io.IOException;
 
 public class LynxCompiler {
     public static void main(String[] args) {
-        File file = new File("./expression.lynx");
+        File file = new File(args[0]);
         Tokenizer tokenizer = new Tokenizer(file);
         tokenizer.tokenize();
 

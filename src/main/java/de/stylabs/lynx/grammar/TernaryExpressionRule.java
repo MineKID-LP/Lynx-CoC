@@ -13,7 +13,6 @@ public class TernaryExpressionRule {
     public static AST createNode(TokenStream tokens) {
         AST ternaryStatement = new AST(ASTType.TERNARY_EXPRESSION);
 
-        tokens.back();
         AST condition = new AST(ASTType.CONDITION);
 
         condition.addChild(Parser.generateExpression(tokens.getBlockParenthesis()));

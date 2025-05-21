@@ -118,6 +118,24 @@ public class Parser {
                     String.format("Unexpected '%s' at: %s:%s", token.value(), token.line(), token.column()));
         }
 
+        if (expressionTokens.size() == 2) {
+            Token token = expressionTokens.get();
+            Token next = expressionTokens.peek();
+
+            // This is the most readable way to do this, at least what I can think of rn.
+            if (token.type().equals(TokenType.IDENTIFIER)) {
+                switch (next.type()) {
+                    case INCREMENT, DECREMENT -> {
+                        AST node = new AST(ASTType.UNARY_EXPRESSION);
+                        node.addChild(new AST(ASTType.VARIABLE_GET, token.value()));
+                        node.addChild(new AST(ASTType.UNARY_OPERATOR, next.type().toString()));
+                        return node;
+                    }
+                }
+            }
+
+        }
+
         PatternMatch match = FunctionCallPattern.get().match(expressionTokens);
         if (match.matched()) {
             // Get rid of standalone function calls
@@ -138,7 +156,13 @@ public class Parser {
             if (!expressionTokens.hasNext())
                 return node;
         }
-
+        match = TernaryExpressionPattern.get().match(expressionTokens);
+        if (match.matched()) {
+            AST node = TernaryExpressionRule.createNode(expressionTokens);
+            if (!expressionTokens.hasNext())
+                return node;
+        }
+        expressionTokens.reset();
         return MathParser.parse(expressionTokens);
     }
 }
