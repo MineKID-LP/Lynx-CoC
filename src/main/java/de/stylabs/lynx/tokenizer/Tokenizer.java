@@ -58,7 +58,14 @@ public class Tokenizer {
                 StringBuilder number = new StringBuilder();
                 int startLine = currentLineNumber;
                 int startColumn = currentColumn + 1;
-                while (hasNext() && Character.isDigit(peek())) {
+                int dotCount = 0;
+                while (hasNext() && Character.isDigit(peek()) || peek() == '.') {
+                    if (peek() == '.') {
+                        dotCount++;
+                        if (dotCount > 1) {
+                            throw new RuntimeException(String.format("Unexpected second decimal point at %s:%s", currentLineNumber, currentColumn + 1));
+                        }
+                    }
                     number.append(next());
                 }
                 tokens.add(new Token(TokenType.NUMBER_LITERAL, number.toString(), startLine, startColumn));
