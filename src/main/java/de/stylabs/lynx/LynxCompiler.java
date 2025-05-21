@@ -13,20 +13,10 @@ public class LynxCompiler {
         File file = new File(String.join(" ", args));
         Tokenizer tokenizer = new Tokenizer(file);
         tokenizer.tokenize();
+        AST ast = Parser.generateAST(tokenizer.getTokens());
 
         try {
-            FileOutputStream tokensOut = new FileOutputStream(new File("./expression.tokens"));
-            for (var token : tokenizer.getTokens()) {
-                String tokenString = token.type() + " " + token.value() + "\n";
-                tokensOut.write(tokenString.getBytes());
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        try {
-            AST ast = Parser.generateAST(tokenizer.getTokens());
-
-            FileOutputStream astOut = new FileOutputStream(new File("./expression.ast"));
+            FileOutputStream astOut = new FileOutputStream(new File("./out.ast"));
             astOut.write(ast.toJSON().getBytes());
         } catch (Throwable e) {
             throw new RuntimeException(e);
