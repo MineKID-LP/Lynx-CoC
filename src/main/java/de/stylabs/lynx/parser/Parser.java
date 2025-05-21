@@ -49,6 +49,7 @@ public class Parser {
         while (peekCounter < tokenStream.size()) {
             if (tokenStream.peek(peekCounter).type().equals(TokenType.RIGHT_PARENTHESIS)) {
                 if (tokenStream.peek(peekCounter + 1).type().equals(TokenType.QUESTION)) {
+                    tokenStream.back();
                     return TernaryExpressionRule.createNode(tokenStream);
                 }
             }
@@ -162,6 +163,14 @@ public class Parser {
             if (!expressionTokens.hasNext())
                 return node;
         }
+        match = ClassInstantiationPattern.get().match(expressionTokens);
+        if (match.matched()) {
+            AST node = ClassInstantiationRule.createNode(expressionTokens);
+            if (!expressionTokens.hasNext())
+                return node;
+        }
+
+        
         expressionTokens.reset();
         return MathParser.parse(expressionTokens);
     }
