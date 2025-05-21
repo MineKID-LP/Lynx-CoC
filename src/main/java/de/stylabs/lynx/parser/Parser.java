@@ -170,7 +170,7 @@ public class Parser {
                 return node;
         }
 
-        
+
         expressionTokens.reset();
         return MathParser.parse(expressionTokens);
     }
