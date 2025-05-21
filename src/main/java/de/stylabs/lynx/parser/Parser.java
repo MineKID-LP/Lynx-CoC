@@ -139,19 +139,6 @@ public class Parser {
                 return node;
         }
 
-        print(expressionTokens.asString());
-
-        return new AST(ASTType.UNKNOWN);
-    }
-
-    private static int getPrecedence(TokenType type) {
-        return switch (type) {
-            case MULTIPLY, DIVIDE, MODULO -> 3; // High precedence
-            case PLUS, MINUS -> 2; // Medium precedence
-            case LESS_THAN, LESS_THAN_EQUALS, GREATER_THAN, GREATER_THAN_EQUALS, EQUALS, NOT_EQUALS -> 1; // Low
-                                                                                                          // precedence
-            case LOGICAL_AND, LOGICAL_OR -> 0; // Lowest precedence
-            default -> -1; // Invalid or unknown token
-        };
+        return MathParser.parse(expressionTokens);
     }
 }

@@ -5,7 +5,6 @@ import de.stylabs.lynx.tokenizer.TokenType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
 public class TokenStream {
